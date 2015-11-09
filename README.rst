@@ -12,9 +12,12 @@ Quick start
 
 1. Install "django-fhossapi" from git::
 
-    sudo pip install django-fhossapi
-    notice: if you fail to install MysqlDBLib, check libmysqlclient-dev package installed.
-            if not, you can install libmysqlclient-dev by apt-get (sudo apt-get install libmysqlclient-dev)
+    $ sudo pip install django-fhossapi
+
+    * Notice:
+    if you fail to install MysqlDBLib, please check the libmysqlclient-dev package already installed.
+    if not, you can install libmysqlclient-dev by using apt-get
+    $ sudo apt-get install libmysqlclient-dev
 
 2. Add "fhossapi" to your INSTALLED_APPS setting like this::
 
@@ -22,7 +25,6 @@ Quick start
         ...
         'rest_framework',
         'rest_framework.authtoken',
-        'rest_framework_swagger',   # swagger optional
         'fhossapi',
     )
 
@@ -37,7 +39,29 @@ Quick start
         )
     }
 
-4. Add rest_framwork_swagger settings (swagger optional)::
+4. Include the fhossapi URLconf in your project urls.py like this::
+
+    ...
+    url(r'^fhossapi/', include('fhossapi.urls')),
+    ...
+
+
+Add API document page (Optional)
+-----------
+
+1. Install "rest_framework_swagger" from git::
+
+    $ sudo pip install rest_framework_swagger
+
+2. Add "rest_framework_swagger" to your INSTALLED_APPS setting like this::
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework_swagger',
+        ...
+    )
+
+3. Add rest_framwork_swagger settings::
 
     SWAGGER_SETTINGS = {
         'info': {
@@ -46,7 +70,9 @@ Quick start
         },
     }
 
-4. Include the fhossapi URLconf in your project urls.py like this::
+4. Include the rest_framework_swagger URLconf in your project urls.py like this::
 
-    url(r'^fhossapi/', include('fhossapi.urls')),
-    url(r'^fhossapi/docs/', include('rest_framework_swagger.urls')),    # swagger optional
+    ...
+    url(r'^fhossapi/docs/', include('rest_framework_swagger.urls')),
+    ...
+
