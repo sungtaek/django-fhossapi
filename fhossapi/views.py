@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -103,7 +103,7 @@ def get_impi_by_row(row):
 	}
 
 def index(request):
-	return HttpResponse("Hello~~")
+	return HttpResponseRedirect("/hss.api/docs")
 
 class AuthToken(APIView):
 	"""
