@@ -10,7 +10,13 @@ Detailed documentation is in the "docs" directory.
 Quick start
 -----------
 
-1. Add "fhossapi" to your INSTALLED_APPS setting like this::
+1. Install "django-fhossapi" from git::
+
+    sudo pip install django-fhossapi
+    notice: if you fail to install MysqlDBLib, check libmysqlclient-dev package installed.
+            if not, you can install libmysqlclient-dev by apt-get (sudo apt-get install libmysqlclient-dev)
+
+2. Add "fhossapi" to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = (
         ...
@@ -20,7 +26,7 @@ Quick start
         'fhossapi',
     )
 
-2. Add rest_framwork settings::
+3. Add rest_framwork settings::
 
     REST_FRAMEWORK = {
         'DEFAULT_PERMISSION_CLASSES': (
@@ -31,7 +37,7 @@ Quick start
         )
     }
 
-3. Add rest_framwork_swagger settings (swagger optional)::
+4. Add rest_framwork_swagger settings (swagger optional)::
 
     SWAGGER_SETTINGS = {
         'info': {
