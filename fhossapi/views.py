@@ -48,7 +48,7 @@ def get_impu_by_row(row, detail=False):
 	elif row['type'] == 2:
 		impu_type = 'Wildcarded PSI'
 	else:
-		impu_type = 'Unknwon'
+		impu_type = 'Unknown'
 
 	if row['user_state'] == 0:
 		user_state = 'Not Registered'
