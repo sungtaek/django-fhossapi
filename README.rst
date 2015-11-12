@@ -14,10 +14,10 @@ Quick start
 
     $ sudo pip install git+http://10.251.31.45:8088/ims/django-fhossapi.git
 
-* Notice:
-if you fail to install MysqlDBLib, please check the libmysqlclient-dev package already installed.
-if not, you can install libmysqlclient-dev by using apt-get
-$ sudo apt-get install libmysqlclient-dev
+    * Notice:
+    if you fail to install MysqlDBLib, please check the libmysqlclient-dev package already installed.
+    if not, you can install libmysqlclient-dev by using apt-get
+    $ sudo apt-get install libmysqlclient-dev
 
 2. Add "fhossapi" to your INSTALLED_APPS setting like this::
 
