@@ -12,7 +12,7 @@ Quick start
 
 1. Install "django-fhossapi" from git::
 
-    $ sudo pip install django-fhossapi
+    $ sudo pip install git+http://10.251.31.45:8088/ims/django-fhossapi.git
 
     * Notice:
     if you fail to install MysqlDBLib, please check the libmysqlclient-dev package already installed.
@@ -75,4 +75,3 @@ Add API document page (Optional)
     ...
     url(r'^fhossapi/docs/', include('rest_framework_swagger.urls')),
     ...
-
