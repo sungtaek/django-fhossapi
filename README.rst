@@ -1,8 +1,9 @@
 =====
-FHoSS-API
+Django-fhossapi
 =====
 
-FHoSS-API is a simple Django app to control FHoSS.
+Django-fhossapi is a Django module to make up FHoSS-API server.
+FHoSS-API controls the FHoSS(FOKUS Home Subscriber Server) data.
 For each question, visitors can choose between a fixed number of answers.
 
 Detailed documentation is in the "docs" directory.
@@ -46,7 +47,7 @@ Quick start
     ...
 
 
-Add API document page (Optional)
+API document page (Optional)
 -----------
 
 1. Install "rest_framework_swagger" from git::
