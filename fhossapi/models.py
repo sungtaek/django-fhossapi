@@ -24,7 +24,7 @@ class BaseModel(object):
 			first = False
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
-			if type(value) is str:
+			if type(value) is str or type(value) is unicode:
 				query = '%s %s=\'%s\'' % (query, name, value)
 			else:
 				query = '%s %s=%s' % (query, name, value)
