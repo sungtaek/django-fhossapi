@@ -28,9 +28,9 @@ class BaseModel(object):
 			else:
 				query = '%s %s=%s' % (query, name, value)
 		
-		logger.debug('query -> ' + query)
+		logger.debug('query -> %s' % (query))
 		row_num = cls.db.execute(query)
-		logger.debug('rows <- ' + row_num)
+		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
 			obj = cls._init_by_row(row)
