@@ -120,7 +120,7 @@ class Impi(BaseModel):
 	table = 'impi'
 	
 	def __init__(self, identity, secret_key, id=-1
-				, id_imsu = -1, vail_auth = 129, def_auth = 128):
+				, id_imsu = -1, avail_auth = 129, def_auth = 128):
 		self.id = id
 		self.id_imsu = id_imsu
 		self.identity = identity
