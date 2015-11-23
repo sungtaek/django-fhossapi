@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import *
 import logging
 import json
-from . import models
+from .models import User
 
 # Create your views here.
 
@@ -143,7 +143,7 @@ class AuthToken(APIView):
 #resp['created'] = created
 		return Response(resp)
 
-class UserList(APIView):
+class UserListView(APIView):
 	"""
 	get list of subscriber
 	---
@@ -154,7 +154,7 @@ class UserList(APIView):
 		resp = {}
 		return Response(resp)
 
-class UserAdd(APIView):
+class UserAddView(APIView):
 	"""
 	manage subscriber
 	---
@@ -172,7 +172,7 @@ class UserAdd(APIView):
 		resp = {}
 		return Response(resp)
 
-class User(APIView):
+class UserView(APIView):
 	"""
 	manage subscriber
 	---
@@ -206,7 +206,7 @@ class User(APIView):
 	permission_classes = (IsAuthenticated,)
 
 	def get(self, request, identity):
-		user = models.User.get_by_impu(identity=identity)
+		user = User.get_by_impu(identity=identity)
 		return Response(user)
 
 	def put(self, request, identity):
