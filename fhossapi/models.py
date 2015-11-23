@@ -78,9 +78,9 @@ class User(BaseModel):
 		val['pref_scscf'] = self.pref_scscf
 		val['scscf_name'] = self.scscf_name
 		val['diameter_name'] = self.diameter_name
-		if impi:
+		if self.impi:
 			val['impi'] = self.impi.__dict__()
-		if impu:
+		if self.impu:
 			val['impu'] = self.impu.__dict__()
 		return val
 
