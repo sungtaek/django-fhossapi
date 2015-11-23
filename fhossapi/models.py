@@ -155,7 +155,7 @@ class User(BaseModel):
 				if user:
 					user.impi = impi
 					users.append(user)
-		return user
+		return users
 	
 	@classmethod
 	def search_by_impu(cls, **kwargs):
