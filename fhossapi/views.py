@@ -206,7 +206,7 @@ class User(APIView):
 	permission_classes = (IsAuthenticated,)
 
 	def get(self, request, identity):
-		user = User.get(identity=identity)
+		user = User.get_by_impu(identity=identity)
 		return Response(user)
 
 	def put(self, request, identity):
