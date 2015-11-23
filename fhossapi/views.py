@@ -199,16 +199,18 @@ class UserSearchView(APIView):
 	def get(self, request):
 		resp = {}
 		users = None
-		
+
 		if request.GET['name']:
 			users = User.search(name=request.GET['name'])
-			resp['users'] = users
 		elif request.GET['impi']:
 			users = User.search_by_impi(identity=request.GET['impi'])
-			resp['users'] = users
 		elif request.GET['impu']:
 			users = User.search_by_impu(identity=request.GET['impu'])
-			resp['users'] = users
+			
+		if users:
+			resp['users'] = []
+			for user in users:
+				resp['users'].append(user.__dict__())
 
 		return Response(resp)
 
