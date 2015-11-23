@@ -120,9 +120,9 @@ class Impi(BaseModel):
 	table = 'impi'
 	
 	def __init__(self, identity, secret_key, id=-1
-				, imsu_id = -1, vail_auth = 129, def_auth = 128):
+				, id_imsu = -1, vail_auth = 129, def_auth = 128):
 		self.id = id
-		self.imsu_id = imsud_id
+		self.id_imsu = id_imsu
 		self.identity = identity
 		self.secret_key = secret_key
 		self.avail_auth = avail_auth
@@ -149,7 +149,7 @@ class Impi(BaseModel):
 	@classmethod	
 	def _init_by_row(cls, row):
 		return cls(id = row['id']
-				, imsu_id = row['imsu_id']
+				, id_imsu = row['id_imsu']
 				, identity = row['identity']
 				, secret_key = row['k']
 				, avail_auth = row['auth_scheme']
