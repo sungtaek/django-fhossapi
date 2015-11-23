@@ -171,8 +171,36 @@ class UserAddView(APIView):
 	def post(self, request):
 		resp = {}
 		return Response(resp)
+	
+class UserSearchView(APIView):
+	"""
+	search subscriber
+	---
+	GET:
+		parameters:
+			- name: name
+			  description: user name
+			  required: false
+			  type: string
+			  paramType: query
+			- name: impi
+			  description: user impi identity
+			  required: false
+			  type: string
+			  paramType: query
+			- name: impu
+			  description: user impu identity
+			  required: false
+			  type: string
+			  paramType: query
+	"""
+	permission_classes = (IsAuthenticated,)
 
-class UserView(APIView):
+	def get(self, request):
+		resp = {}
+		return Response(resp)
+
+class UserDetailView(APIView):
 	"""
 	manage subscriber
 	---
@@ -205,15 +233,15 @@ class UserView(APIView):
 	"""
 	permission_classes = (IsAuthenticated,)
 
-	def get(self, request, identity):
-		user = User.get_by_impu(identity=identity)
+	def get(self, request, name):
+		user = User.get(name=name)
 		return Response(user.__dict__())
 
-	def put(self, request, identity):
+	def put(self, request, name):
 		resp = {}
 		return Response(resp)
 
-	def delete(self, request, identity):
+	def delete(self, request, name):
 		resp = {}
 		return Response(resp)
 
