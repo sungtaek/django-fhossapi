@@ -162,7 +162,7 @@ class Impi(BaseModel):
 		row_num = cls.db.execute(query)
 		if row_num > 0:
 			row = cls.db.fetch_one()
-			impu = Impi.get(id=row['id_impi'])
+			impi = Impi.get(id=row['id_impi'])
 		return impi
 	
 class Impu(BaseModel):
