@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import *
 import logging
 import json
-from .models import *
+from . import models
 
 # Create your views here.
 
@@ -206,7 +206,7 @@ class User(APIView):
 	permission_classes = (IsAuthenticated,)
 
 	def get(self, request, identity):
-		user = User.get_by_impu(identity=identity)
+		user = models.User.get_by_impu(identity=identity)
 		return Response(user)
 
 	def put(self, request, identity):
