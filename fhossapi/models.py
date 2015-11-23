@@ -23,6 +23,7 @@ class BaseModel(object):
 				query = '%s and' % (query)
 			first = False
 			
+			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
 			if type(value) is str:
 				query = '%s %s=\'%s\'' % (query, name, value)
 			else:
