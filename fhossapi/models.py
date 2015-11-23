@@ -43,7 +43,6 @@ class BaseModel(object):
 		'''
 		must override this function
 		'''
-		logger.debug('call _init_by_row(BaseModel)')
 		return cls()
 
 	def save(self):
@@ -109,7 +108,6 @@ class User(BaseModel):
 		user = None
 		impu = Impu.get(**kwargs)
 		if impu:
-			logger.debug('impu -> ' + impu)
 			impi = Impi.get_by_impu(impu.id)
 			if impi and impi.imsu_id >= 0:
 				user = User.get(id=impi.imsu_id)
@@ -204,8 +202,8 @@ class Impu(BaseModel):
 		
 	@classmethod
 	def _init_by_row(cls, row):
-		logger.debug('call _init_by_row(Impu)')
-		return cls(identity = row['identity']
+		return cls(id = row['id']
+				, identity = row['identity']
 				, service_profile = row['id_sp']
 				, user_status = row['user_state']
 				, impu_type = row['type']
