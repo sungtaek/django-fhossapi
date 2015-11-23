@@ -25,9 +25,9 @@ class BaseModel(object):
 			else:
 				query = '%s %s=%s' % (query, name, value)
 		
-		row_num = db.execute(query)
+		row_num = cls.db.execute(query)
 		if row_num > 0:
-			row = db.fetch_one()
+			row = cls.db.fetch_one()
 			obj = cls._init_by_row(row)
 		
 		return obj
@@ -153,9 +153,9 @@ class Impi(BaseModel):
 	def get_by_impu(cls, impu_id):
 		impi = None
 		query = 'select id_impi from impi_impu where id_impu=\'%s\'' % (impu_id)
-		row_num = db.execute(query)
+		row_num = cls.db.execute(query)
 		if row_num > 0:
-			row = db.fetch_one()
+			row = cls.db.fetch_one()
 			impu = Impi.get(id=row['id_impi'])
 		return impi
 	
