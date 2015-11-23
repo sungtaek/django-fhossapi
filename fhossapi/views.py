@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import *
 import logging
 import json
-from .db import Database
+from .models import *
 
 # Create your views here.
 
@@ -150,21 +150,8 @@ class UserList(APIView):
 	"""
 	permission_classes = (IsAuthenticated,)
 
-	def __init__(self):
-		self.db = Database()
-
 	def get(self, request):
 		resp = {}
-		row_num = self.db.execute('SELECT count(identity) as total FROM impu')
-		row = self.db.fetch_one()
-		total = row['total']
-		resp['total'] = total
-		if total > 0:
-			resp['public'] = []
-			row_num = self.db.execute('SELECT * FROM impu')
-			rows = self.db.fetch_all()
-			for row in rows:
-				resp['public'].append(get_impu_by_row(row))
 		return Response(resp)
 
 class UserAdd(APIView):
@@ -180,9 +167,6 @@ class UserAdd(APIView):
 			  paramType: body
 	"""
 	permission_classes = (IsAuthenticated,)
-
-	def __init__(self):
-		self.db = Database()
 
 	def post(self, request):
 		resp = {}
@@ -221,27 +205,9 @@ class User(APIView):
 	"""
 	permission_classes = (IsAuthenticated,)
 
-	def __init__(self):
-		self.db = Database()
-
 	def get(self, request, identity):
-		resp = {}
-		row_num = self.db.execute('\
-				SELECT * FROM impu \
-				WHERE identity=\'%s\'' % (identity))
-		if row_num > 0:
-			row = self.db.fetch_one()
-			resp['public'] = get_impu_by_row(row, detail=True)
-			row_num = self.db.execute('\
-					SELECT * FROM impi_impu, impi \
-					WHERE impi_impu.id_impi = impi.id \
-					  AND impi_impu.id_impu=\'%s\'' % (row['id']))
-			if row_num > 0:
-				row = self.db.fetch_one()
-				resp['private'] = get_impi_by_row(row)
-		else:
-			raise NotFound('Not found impi(%s)' % (identity))
-		return Response(resp)
+		user = User.get(identity=identity)
+		return Response(user)
 
 	def put(self, request, identity):
 		resp = {}
@@ -258,21 +224,8 @@ class ServiceList(APIView):
 	"""
 	permission_classes = (IsAuthenticated,)
 
-	def __init__(self):
-		self.db = Database()
-
 	def get(self, request):
 		resp = {}
-		row_num = self.db.execute('SELECT count(identity) as total FROM impu')
-		row = self.db.fetch_one()
-		total = row['total']
-		resp['total'] = total
-		if total > 0:
-			resp['public'] = []
-			row_num = self.db.execute('SELECT * FROM impu')
-			rows = self.db.fetch_all()
-			for row in rows:
-				resp['public'].append(get_impu_by_row(row))
 		return Response(resp)
 
 class ServiceAdd(APIView):
@@ -288,9 +241,6 @@ class ServiceAdd(APIView):
 			  paramType: body
 	"""
 	permission_classes = (IsAuthenticated,)
-
-	def __init__(self):
-		self.db = Database()
 
 	def post(self, request):
 		resp = {}
@@ -329,26 +279,8 @@ class Service(APIView):
 	"""
 	permission_classes = (IsAuthenticated,)
 
-	def __init__(self):
-		self.db = Database()
-
 	def get(self, request, identity):
 		resp = {}
-		row_num = self.db.execute('\
-				SELECT * FROM impu \
-				WHERE identity=\'%s\'' % (identity))
-		if row_num > 0:
-			row = self.db.fetch_one()
-			resp['public'] = get_impu_by_row(row, detail=True)
-			row_num = self.db.execute('\
-					SELECT * FROM impi_impu, impi \
-					WHERE impi_impu.id_impi = impi.id \
-					  AND impi_impu.id_impu=\'%s\'' % (row['id']))
-			if row_num > 0:
-				row = self.db.fetch_one()
-				resp['private'] = get_impi_by_row(row)
-		else:
-			raise NotFound('Not found impi(%s)' % (identity))
 		return Response(resp)
 
 	def put(self, request, identity):
