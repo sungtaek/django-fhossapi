@@ -197,15 +197,16 @@ class UserSearchView(APIView):
 	permission_classes = (IsAuthenticated,)
 
 	def get(self, request):
+		q = request.GET
 		resp = {}
 		users = None
 
-		if request.GET['name']:
-			users = User.search(name=request.GET['name'])
-		elif request.GET['impi']:
-			users = User.search_by_impi(identity=request.GET['impi'])
-		elif request.GET['impu']:
-			users = User.search_by_impu(identity=request.GET['impu'])
+		if q.has_key('name') and q['name'] != '':
+			users = User.search(name=q['name'])
+		if q.has_key('impi') and q['impi'] != '':
+			users = User.search_by_impi(identity=q['impi'])
+		if q.has_key('impu') and q['impu'] != '':
+			users = User.search_by_impu(identity=q['impu'])
 			
 		if users:
 			resp['users'] = []
