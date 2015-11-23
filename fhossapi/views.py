@@ -207,7 +207,7 @@ class UserView(APIView):
 
 	def get(self, request, identity):
 		user = User.get_by_impu(identity=identity)
-		return Response(user)
+		return Response(user.__dict__())
 
 	def put(self, request, identity):
 		resp = {}
