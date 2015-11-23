@@ -15,15 +15,15 @@ class BaseModel(object):
 		first = True
 		for name, value in kwargs.items():
 			if first:
-				query = query + ' where'
+				query = '%s where' % (query)
 			else :
-				query = query + ' and'
+				query = '%s and' % (query)
 			first = False
 			
 			if isinstance(value, str):
-				query = query + ' '  + name + ' = \'' + value + '\''
+				query = '%s %s=\'%s\'' % (query, name, value)
 			else:
-				query = query + ' '  + name + ' = ' + value
+				query = '%s %s=%s' % (query, name, value)
 		
 		row_num = db.execute(query)
 		if row_num > 0:
