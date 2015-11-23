@@ -55,7 +55,8 @@ class BaseModel(object):
 class User(BaseModel):
 	table = 'imsu'
 	
-	def __init__(self, name, capa_set=-1, pref_scscf='', scscf_name='', diameter_name=''):
+	def __init__(self, name, id=-1, capa_set=-1, pref_scscf='', scscf_name='', diameter_name=''):
+		self.id = id
 		self.name = name
 		self.capa_set = capa_set
 		self.pref_scscf = pref_scscf
@@ -112,7 +113,8 @@ class User(BaseModel):
 class Impi(BaseModel):
 	table = 'impi'
 	
-	def __init__(self, id=-1, imsu_id = -1, identity, secret_key, avail_auth = 129, def_auth = 128):
+	def __init__(self, identity, secret_key, id=-1
+				, imsu_id = -1, vail_auth = 129, def_auth = 128):
 		self.id = id
 		self.imsu_id = imsud_id
 		self.identity = identity
@@ -160,7 +162,7 @@ class Impi(BaseModel):
 class Impu(BaseModel):
 	table = 'impu'
 	
-	def __init__(self, id=-1, identity, service_profile
+	def __init__(self, identity, service_profile, id=-1
 				, user_status=0, impu_type=0, barring=False
 				, charging_info_set=-1, can_register=True
 				, wildcard_psi='', psi_activation=False
