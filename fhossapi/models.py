@@ -39,6 +39,36 @@ class BaseModel(object):
 		return obj
 	
 	@classmethod
+	def search(cls, **kwargs):
+		objs = []
+
+		query = 'select * from %s' % (cls.table)
+		first = True
+		for name, value in kwargs.items():
+			if first:
+				query = '%s where' % (query)
+			else :
+				query = '%s and' % (query)
+			first = False
+			
+			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
+			if type(value) is str or type(value) is unicode:
+				query = '%s %s like \'%%%s%%\'' % (query, name, value)
+			else:
+				query = '%s %s = %s' % (query, name, value)
+		
+		logger.debug('query -> %s' % (query))
+		row_num = cls.db.execute(query)
+		logger.debug('rows <- %d' % (row_num))
+		if row_num > 0:
+			row = cls.db.fetch_one()
+			while row:
+				objs.append(cls._init_by_row(row))
+				row = cls.db.fetch_one()
+		
+		return objs
+	
+	@classmethod
 	def _init_by_row(cls, row):
 		'''
 		must override this function
@@ -96,7 +126,7 @@ class User(BaseModel):
 	@classmethod
 	def get_by_impi(cls, **kwargs):
 		user = None
-		impi = Impi.gets(**kwargs)
+		impi = Impi.get(**kwargs)
 		if impi and impi.id_imsu >= 0:
 			user = User.get(id=impi.id_imsu)
 			if user:
@@ -114,7 +144,31 @@ class User(BaseModel):
 				user.impi = impi
 				user.impu = impu
 		return user
-			
+
+	@classmethod
+	def search_by_impi(cls, **kwargs):
+		users = []
+		impis = Impi.search(**kwargs)
+		for impi in impis:
+			if impi.id_imsu >= 0:
+				user = User.get(id=impi.id_imsu)
+				if user:
+					user.impi = impi
+					users.append(user)
+		return user
+	
+	@classmethod
+	def search_by_impu(cls, **kwargs):
+		users = []
+		impus = Impu.search(**kwargs)
+		for impu in impus:
+			impi = Impi.get_by_impu(impu.id)
+			if impi and impi.id_imsu>= 0:
+				user = User.get(id=impi.id_imsu)
+				user.impi = impi
+				user.impu = impu
+				users.append(user)
+		return users
 
 class Impi(BaseModel):
 	table = 'impi'
