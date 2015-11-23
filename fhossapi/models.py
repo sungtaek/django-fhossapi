@@ -108,6 +108,7 @@ class User(BaseModel):
 		user = None
 		impu = Impu.get(**kwargs)
 		if impu:
+			logger.debug('impu -> ' + impu)
 			impi = Impi.get_by_impu(impu.id)
 			if impi and impi.imsu_id >= 0:
 				user = User.get(id=impi.imsu_id)
