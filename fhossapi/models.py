@@ -100,7 +100,7 @@ class User(BaseModel):
 	@classmethod
 	def get_by_impu(cls, **kwargs):
 		user = None
-		impu = Impu.get(kwargs)
+		impu = Impu.get(kwargs=kwargs)
 		if impu:
 			impi = Impi.get_by_impu(impu.id)
 			if impi and impi.imsu_id >= 0:
