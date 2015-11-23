@@ -8,7 +8,7 @@ class BaseModel(object):
 	table = None
 
 	@classmethod
-	def get(cls, **kwargs):
+	def get(cls, *args, **kwargs):
 		obj = None
 
 		query = 'select * from %s' % (cls.table)
@@ -88,9 +88,9 @@ class User(BaseModel):
 
 			
 	@classmethod
-	def get_by_impi(cls, **kwargs):
+	def get_by_impi(cls, *args, **kwargs):
 		user = None
-		impi = Impi.gets(kwargs)
+		impi = Impi.gets(args, kwargs)
 		if impi and impi.imsu_id >= 0:
 			user = User.get(id=impi.imsu_id)
 			if user:
@@ -98,9 +98,9 @@ class User(BaseModel):
 		return user
 	
 	@classmethod
-	def get_by_impu(cls, **kwargs):
+	def get_by_impu(cls, *args, **kwargs):
 		user = None
-		impu = Impu.get(kwargs=kwargs)
+		impu = Impu.get(args, kwargs)
 		if impu:
 			impi = Impi.get_by_impu(impu.id)
 			if impi and impi.imsu_id >= 0:
