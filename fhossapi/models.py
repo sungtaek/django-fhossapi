@@ -23,7 +23,7 @@ class BaseModel(object):
 				query = '%s and' % (query)
 			first = False
 			
-			if isinstance(value, str):
+			if type(value) is str:
 				query = '%s %s=\'%s\'' % (query, name, value)
 			else:
 				query = '%s %s=%s' % (query, name, value)
