@@ -206,15 +206,15 @@ class UserDetailView(APIView):
 	---
 	GET:
 		parameters:
-			- name: identity
-			  description: impu identity
+			- name: name
+			  description: user name
 			  required: true
 			  type: string
 			  paramType: path
 	PUT:
 		parameters:
-			- name: identity
-			  description: impu identity
+			- name: name
+			  description: user name
 			  required: true
 			  type: string
 			  paramType: path
@@ -225,8 +225,8 @@ class UserDetailView(APIView):
 			  paramType: body
 	DELETE:
 		parameters:
-			- name: identity
-			  description: impu identity
+			- name: name 
+			  description: user name
 			  required: true
 			  type: string
 			  paramType: path
