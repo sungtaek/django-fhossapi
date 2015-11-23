@@ -109,8 +109,8 @@ class User(BaseModel):
 		impu = Impu.get(**kwargs)
 		if impu:
 			impi = Impi.get_by_impu(impu.id)
-			if impi and impi.imsu_id >= 0:
-				user = User.get(id=impi.imsu_id)
+			if impi and impi.id_imsu>= 0:
+				user = User.get(id=impi.id_imsu)
 				user.impi = impi
 				user.impu = impu
 		return user
