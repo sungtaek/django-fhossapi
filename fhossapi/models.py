@@ -123,8 +123,8 @@ class User(BaseModel):
 		return cls(name = row['name']
 				, capa_set = row['id_capabilities_set']
 				, pref_scscf = row['id_preferred_scscf_set']
-				, scscf_name = row['scscf_name']
-				, diameter_name= row['diameter_name'])
+				, scscf_name = row['imsu.scscf_name']
+				, diameter_name= row['imsu.diameter_name'])
 
 			
 	@classmethod
