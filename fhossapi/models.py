@@ -25,7 +25,7 @@ class BaseModel(object):
 			first = False
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
-			q = '%s %s=\?' % (q, name)
+			q = '%s %s=?' % (q, name)
 			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
@@ -54,9 +54,9 @@ class BaseModel(object):
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
 			if type(value) is str or type(value) is unicode:
-				q = '%s %s like \'%%\?%%\'' % (q, name)
+				q = '%s %s like \'%%?%%\'' % (q, name)
 			else:
-				q = '%s %s = \?' % (q, name)
+				q = '%s %s = ?' % (q, name)
 			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
@@ -215,7 +215,7 @@ class Impi(BaseModel):
 	@classmethod
 	def get_by_impu(cls, impu_id):
 		impi = None
-		q = 'select id_impi from impi_impu where id_impu=\?'
+		q = 'select id_impi from impi_impu where id_impu=?'
 		row_num = cls.db.execute(q, impu_id)
 		if row_num > 0:
 			row = cls.db.fetch_one()
