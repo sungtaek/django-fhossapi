@@ -16,7 +16,7 @@ class User(BaseModel):
 	pref_scscf	= Field('id_preferred_scscf_set', Field.INTEGER)
 
 	def dict(self):
-		value = super.dict()
+		value = super(User, self).dict()
 		if self.impi:
 			value['impi'] = self.impi.dict()
 		if self.impu:
