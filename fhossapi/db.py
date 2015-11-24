@@ -148,7 +148,7 @@ class BaseModel(object):
 		logger.debug('result <- %d rows' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
-			obj = cls._init_by_row(row)
+			obj = cls.create_by_row(row)
 		
 		return obj
 	
@@ -182,7 +182,7 @@ class BaseModel(object):
 		if row_num > 0:
 			row = cls.db.fetch_one()
 			while row:
-				objs.append(cls._init_by_row(row))
+				objs.append(cls.create_by_row(row))
 				row = cls.db.fetch_one()
 		
 		return objs
