@@ -98,8 +98,10 @@ class BaseModel(object):
 		for key, val in cls._get_all_fields().iteritems():
 			sel_name = cls.sel_name(key)
 			if row.has_key(sel_name):
+				logger.debug('setrow %s' % (key))
 				args[key] = row[sel_name]
 			elif row.has_key(val.db_column):
+				logger.debug('setrow %s' % (val.db_column))
 				args[key] = row[val.db_column]
 		return cls(**args)
 	
