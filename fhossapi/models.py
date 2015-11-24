@@ -31,7 +31,7 @@ class BaseModel(object):
 		for value in q_args:
 			logger.debug('args -> {}'.format(value))
 		row_num = cls.db.execute(q, tuple(q_args))
-		logger.debug('rows <- %d' % (row_num))
+		logger.debug('result <- %d rows' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
 			obj = cls._init_by_row(row)
@@ -63,7 +63,7 @@ class BaseModel(object):
 		for value in q_args:
 			logger.debug('args -> {}'.format(value))
 		row_num = cls.db.execute(q, tuple(q_args))
-		logger.debug('rows <- %d' % (row_num))
+		logger.debug('result <- %d rows' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
 			while row:
