@@ -148,7 +148,7 @@ class UserListView(APIView):
 	get list of subscriber
 	---
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request):
 		resp = {}
@@ -166,7 +166,7 @@ class UserAddView(APIView):
 			  type: json
 			  paramType: body
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def post(self, request):
 		resp = {}
@@ -194,7 +194,7 @@ class UserSearchView(APIView):
 			  type: string
 			  paramType: query
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request):
 		q = request.GET
@@ -246,7 +246,7 @@ class UserDetailView(APIView):
 			  type: string
 			  paramType: path
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
 		user = User.get(name=name)
@@ -265,7 +265,7 @@ class ServiceList(APIView):
 	get list of service
 	---
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request):
 		resp = {}
@@ -283,7 +283,7 @@ class ServiceAdd(APIView):
 			  type: json
 			  paramType: body
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def post(self, request):
 		resp = {}
@@ -320,7 +320,7 @@ class Service(APIView):
 			  type: string
 			  paramType: path
 	"""
-	permission_classes = (IsAuthenticated,)
+	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, identity):
 		resp = {}
