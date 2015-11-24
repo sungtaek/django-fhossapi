@@ -52,7 +52,7 @@ class BaseModel(object):
 			first = False
 			
 			if type(value) is str or type(value) is unicode:
-				q = '%s %s like \'%%%%s%%\'' % (q, name)
+				q = '%s %s like %%%%s%%' % (q, name)
 			else:
 				q = '%s %s = %%s' % (q, name)
 			q_args.append(value)
