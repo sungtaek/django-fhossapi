@@ -1,4 +1,9 @@
 import MySQLdb
+import logging
+
+# Create your models here.
+
+logger = logging.getLogger('fhossapi')
 
 def singleton(cls):
 	instances = {}
@@ -15,9 +20,9 @@ class Database(object):
 		self.cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
 
 	def execute(self, *args):
-		print 'execute args ->'
+		logger.debug('execute args ->')
 		for arg in args:
-			print arg
+			logger.debug(arg)
 		return self.cursor.execute(*args)
 
 	def fetch_all(self):
