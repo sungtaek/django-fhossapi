@@ -14,23 +14,29 @@ class BaseModel(object):
 	def get(cls, **kwargs):
 		obj = None
 
-		query = 'select * from %s' % (cls.table)
+		q = 'select * from %s' % (cls.table)
+		q_args = ()
 		first = True
 		for name, value in kwargs.items():
 			if first:
-				query = '%s where' % (query)
+				q = '%s where' % (q)
 			else :
-				query = '%s and' % (query)
+				q = '%s and' % (q)
 			first = False
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
+			'''
 			if type(value) is str or type(value) is unicode:
 				query = '%s %s=\'%s\'' % (query, name, value)
 			else:
 				query = '%s %s=%s' % (query, name, value)
+			'''
+			q = '%s %s=?' % (q, name)
+			q_args = q_args + value
 		
-		logger.debug('query -> %s' % (query))
-		row_num = cls.db.execute(query)
+		logger.debug('query -> %s' % (q))
+		logger.debug('args -> %s' % (','.join(q_args)))
+		row_num = cls.db.execute(q, q_args)
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
@@ -42,23 +48,26 @@ class BaseModel(object):
 	def search(cls, **kwargs):
 		objs = []
 
-		query = 'select * from %s' % (cls.table)
+		q = 'select * from %s' % (cls.table)
+		q_args = ()
 		first = True
 		for name, value in kwargs.items():
 			if first:
-				query = '%s where' % (query)
-			else :
-				query = '%s and' % (query)
+				q = '%s where' % (q)
+			else:
+				q = '%s and' % (q)
 			first = False
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
 			if type(value) is str or type(value) is unicode:
-				query = '%s %s like \'%%%s%%\'' % (query, name, value)
+				q = '%s %s like \'%%?%%\'' % (q, name)
 			else:
-				query = '%s %s = %s' % (query, name, value)
+				q = '%s %s = ?' % (q, name)
+			q_args = q_args + value
 		
-		logger.debug('query -> %s' % (query))
-		row_num = cls.db.execute(query)
+		logger.debug('query -> %s' % (q))
+		logger.debug('args -> %s' % (','.join(q_args)))
+		row_num = cls.db.execute(q, q_args)
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
@@ -212,8 +221,8 @@ class Impi(BaseModel):
 	@classmethod
 	def get_by_impu(cls, impu_id):
 		impi = None
-		query = 'select id_impi from impi_impu where id_impu=\'%s\'' % (impu_id)
-		row_num = cls.db.execute(query)
+		q = 'select id_impi from impi_impu where id_impu=?'
+		row_num = cls.db.execute(q, impu_id)
 		if row_num > 0:
 			row = cls.db.fetch_one()
 			impi = Impi.get(id=row['id_impi'])
