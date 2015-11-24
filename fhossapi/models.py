@@ -25,7 +25,7 @@ class BaseModel(object):
 			first = False
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
-			q = '%s %s=?' % (q, name)
+			q = '%s %s=%%s' % (q, name)
 			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
