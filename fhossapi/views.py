@@ -211,7 +211,7 @@ class UserSearchView(APIView):
 		if users:
 			resp['users'] = []
 			for user in users:
-				resp['users'].append(user.__dict__())
+				resp['users'].append(user.dict())
 
 		return Response(resp)
 
@@ -250,7 +250,7 @@ class UserDetailView(APIView):
 
 	def get(self, request, name):
 		user = User.get(name=name)
-		return Response(user.__dict__())
+		return Response(user.dict())
 
 	def put(self, request, name):
 		resp = {}
