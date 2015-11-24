@@ -15,7 +15,7 @@ class BaseModel(object):
 		obj = None
 
 		q = 'select * from %s' % (cls.table)
-		q_args = ()
+		q_args = []
 		first = True
 		for name, value in kwargs.items():
 			if first:
@@ -25,18 +25,12 @@ class BaseModel(object):
 			first = False
 			
 			logger.debug('param %s=%s(%s)' % (name, value, type(value)))
-			'''
-			if type(value) is str or type(value) is unicode:
-				query = '%s %s=\'%s\'' % (query, name, value)
-			else:
-				query = '%s %s=%s' % (query, name, value)
-			'''
 			q = '%s %s=?' % (q, name)
-			q_args = q_args + value
+			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
 		logger.debug('args -> %s' % (','.join(q_args)))
-		row_num = cls.db.execute(q, q_args)
+		row_num = cls.db.execute(q, tuple(q_args))
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
@@ -49,7 +43,7 @@ class BaseModel(object):
 		objs = []
 
 		q = 'select * from %s' % (cls.table)
-		q_args = ()
+		q_args = []
 		first = True
 		for name, value in kwargs.items():
 			if first:
@@ -63,11 +57,11 @@ class BaseModel(object):
 				q = '%s %s like \'%%?%%\'' % (q, name)
 			else:
 				q = '%s %s = ?' % (q, name)
-			q_args = q_args + value
+			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
 		logger.debug('args -> %s' % (','.join(q_args)))
-		row_num = cls.db.execute(q, q_args)
+		row_num = cls.db.execute(q, tuple(q_args))
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
