@@ -15,6 +15,11 @@ class User(BaseModel):
 	capa_set	= Field('id_capabilities_set', Field.INTEGER)
 	pref_scscf	= Field('id_preferred_scscf_set', Field.INTEGER)
 
+	def __init__(self, **kwargs):
+		super(User, self).__init__(**kwargs)
+		self.impi = None
+		self.impu = None
+
 	def dict(self):
 		value = super(User, self).dict()
 		if self.impi:
