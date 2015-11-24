@@ -15,6 +15,9 @@ class Database(object):
 		self.cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
 
 	def execute(self, *args):
+		print 'execute args ->'
+		for arg in args:
+			print arg
 		return self.cursor.execute(*args)
 
 	def fetch_all(self):
