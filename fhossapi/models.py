@@ -28,7 +28,8 @@ class BaseModel(object):
 			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
-		logger.debug('args -> %s' % (','.join(q_args)))
+		for value in q_args:
+			logger.debug('args -> {}'.format(value))
 		row_num = cls.db.execute(q, tuple(q_args))
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
@@ -59,7 +60,8 @@ class BaseModel(object):
 			q_args.append(value)
 		
 		logger.debug('query -> %s' % (q))
-		logger.debug('args -> %s' % (','.join(q_args)))
+		for value in q_args:
+			logger.debug('args -> {}'.format(value))
 		row_num = cls.db.execute(q, tuple(q_args))
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
