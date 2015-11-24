@@ -19,11 +19,8 @@ class Database(object):
 		self.db = MySQLdb.connect('localhost','hss','hss','hss_db')
 		self.cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
 
-	def execute(self, *args):
-		logger.debug('execute args ->')
-		for arg in args:
-			logger.debug(arg)
-		return self.cursor.execute(*args)
+	def execute(self, query, args=None):
+		return self.cursor.execute(query, args)
 
 	def fetch_all(self):
 		return self.cursor.fetchall()
