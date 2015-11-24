@@ -30,7 +30,7 @@ class BaseModel(object):
 		
 		logger.debug('query -> %s' % (q))
 		logger.debug('args -> %s' % (','.join(q_args)))
-		row_num = cls.db.execute(q, *q_args)
+		row_num = cls.db.execute(q, tuple(q_args))
 		logger.debug('rows <- %d' % (row_num))
 		if row_num > 0:
 			row = cls.db.fetch_one()
