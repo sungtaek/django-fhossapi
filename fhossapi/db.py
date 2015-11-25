@@ -41,10 +41,10 @@ class Database(object):
 			q_sels.append(','.join(model._col_as_sel_names()))
 			q_tbls.append(model.table)
 			if prev_model:
-				if (rel_field = prev_model._get_rel_field(model)):
+				if (rel_field = prev_model._get_rel_field(model)) is not None:
 					left_name = prev_model._col_name(rel_field)
 					right_name = model._col_name(rel_field.relation.peer_field)
-				elif (rel_field = model._get_rel_field(prev_model)):
+				elif (rel_field = model._get_rel_field(prev_model)) is not None:
 					left_name = model._col_name(rel_field)
 					right_name = prev_model._col_name(rel_field.relation.peer_field)
 				else:
