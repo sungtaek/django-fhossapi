@@ -94,14 +94,6 @@ class Impi(BaseModel):
 	early_ims_ip= Field('ip', Field.STRING, nullable=False, default='')
 	dsl_line_id	= Field('line_identifier', Field.STRING, nullable=False, default='')
 	
-class ImpiImpu(BaseModel):
-	table		= 'impi_impu'
-	
-	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
-	id_impi		= Field('id_impi', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impi, Impi.id))
-	id_impu		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impu, Impu.id))
-	user_status	= Field('user_state', Field.INTEGER, nullable=False, default=0, dictionable=False)
-
 class Impu(BaseModel):
 	table		= 'impu'
 	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
@@ -116,6 +108,14 @@ class Impu(BaseModel):
 	display_name	= Field('display_name', Field.STRING, nullable=False, default='')
 	psi_activation	= Field('psi_activation', Field.INTEGER, nullable=False, default=0)
 	can_register	= Field('can_register', Field.INTEGER, nullable=False, default=0)
+
+class ImpiImpu(BaseModel):
+	table		= 'impi_impu'
+	
+	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
+	id_impi		= Field('id_impi', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impi, Impi.id))
+	id_impu		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impu, Impu.id))
+	user_status	= Field('user_state', Field.INTEGER, nullable=False, default=0, dictionable=False)
 
 class ImpuVisitedNetwork(BaseModel):
 	table		= 'impu_visited_network'
