@@ -1,5 +1,5 @@
 from django.db import models
-from .db import BaseModel, Field
+from .db import BaseModel, Field, ModelRelation
 import logging
 
 # Create your models here.
@@ -29,32 +29,61 @@ class User(BaseModel):
 		return value
 
 	@classmethod
-	def get_with_impi_impu(cls, **kwargs):
+	def get_with_impi_impu(cls, user_args=None, impi_args=None, impu_args=None):
 		user = None
-		impi = Impi.get(**kwargs)
-		if impi and impi.id_imsu >= 0:
-			user = User.get(id=impi.id_imsu)
-			if user:
-				user.impi = impi
+		conditions = []
+		
+		if user_args:
+			for key, value in user_args.iteritmes():
+				conditions.append(User.condition(key, value))
+				
+		if impi_args:
+			for key, value in impi_args.iteritmes():
+				conditions.append(Impi.condition(key, value))
+
+		if impu_args:
+			for key, value in impu_args.iteritmes():
+				conditions.append(Impu.condition(key, value))
+				
+		row_num = cls.db.select_by_model([User,Impi,ImpiImpu,Impu], conditions)
+		if row_num > 0:
+			row = cls.db.fetch_one()
+			user = User.create_by_row(row)
+			user.impi = Impi.create_by_row(row)
+			user.impu = Impu.create_by_row(row)
 		return user
 	
 	@classmethod
-	def search_with_impi_impu(cls, **kwargs):
+	def filter_with_impi_impu(cls, user_args=None, impi_args=None, impu_args=None):
 		users = []
-		impus = Impu.search(**kwargs)
-		for impu in impus:
-			impi = Impi.get_by_impu(impu.id)
-			if impi and impi.id_imsu>= 0:
-				user = User.get(id=impi.id_imsu)
-				user.impi = impi
-				user.impu = impu
+		conditions = []
+		
+		if user_args:
+			for key, value in user_args.iteritmes():
+				conditions.append(User.condition(key, value))
+				
+		if impi_args:
+			for key, value in impi_args.iteritmes():
+				conditions.append(Impi.condition(key, value))
+
+		if impu_args:
+			for key, value in impu_args.iteritmes():
+				conditions.append(Impu.condition(key, value))
+				
+		row_num = cls.db.select_by_model([User,Impi,ImpiImpu,Impu], conditions)
+		if row_num > 0:
+			for row in cls.db.fetch_all():
+				user = User.create_by_row(row)
+				user.impi = Impi.create_by_row(row)
+				user.impu = Impu.create_by_row(row)
 				users.append(user)
 		return users
 
 class Impi(BaseModel):
-	table = 'impi'
+	table		= 'impi'
+
 	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
-	id_imsu		= Field('id_imsu', Field.INTEGER, default=-1, dictionable=False)
+	id_imsu		= Field('id_imsu', Field.INTEGER, default=-1, dictionable=False, relation=FieldRelation(User, User.id))
 	identity	= Field('identity', Field.STRING, nullable=False)
 	secret_key	= Field('k', Field.STRING, nullable=False)
 	avail_auth	= Field('auth_scheme', Field.INTEGER, nullable=False, default=129)
@@ -65,8 +94,16 @@ class Impi(BaseModel):
 	early_ims_ip= Field('ip', Field.STRING, nullable=False, default='')
 	dsl_line_id	= Field('line_identifier', Field.STRING, nullable=False, default='')
 	
+class ImpiImpu(BaseModel):
+	table		= 'impi_impu'
+	
+	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
+	id_impi		= Field('id_impi', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(Impi, Impi.id))
+	id_impu		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(Impu, Impu.id))
+	user_status	= Field('user_state', Field.INTEGER, nullable=False, default=0, dictionable=False)
+
 class Impu(BaseModel):
-	table = 'impu'
+	table		= 'impu'
 	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
 	identity	= Field('identity', Field.STRING, nullable=False)
 	impu_type	= Field('type', Field.INTEGER, nullable=False, default=0)
@@ -79,3 +116,14 @@ class Impu(BaseModel):
 	display_name	= Field('display_name', Field.STRING, nullable=False, default='')
 	psi_activation	= Field('psi_activation', Field.INTEGER, nullable=False, default=0)
 	can_register	= Field('can_register', Field.INTEGER, nullable=False, default=0)
+
+class ImpuVisitedNetwork(BaseModel):
+	table		= 'impu_visited_network'
+	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
+	id_impi		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(Impu, Impu.id))
+	id_impu		= Field('id_visited_network', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(VisitedNetwork, VisitedNetwork.id))
+	
+class VisitedNetwork(BaseModel):
+	table		= 'visited_network'
+	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
+	identity	= Field('identity', Field.STRING, nullable=False)

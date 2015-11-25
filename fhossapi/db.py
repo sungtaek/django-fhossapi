@@ -1,5 +1,7 @@
 import MySQLdb
 import logging
+from pyexpat import model
+from _csv import field_size_limit
 
 # Create your models here.
 
@@ -27,18 +29,69 @@ class Database(object):
 
 	def fetch_one(self):
 		return self.cursor.fetchone()
+	
+	def select_by_model(self, models, conditions=None):
+		q_sels = []
+		q_tbls = []
+		q_wheres = []
+		q_values = []
+		
+		prev_model = None
+		for model in models:
+			q_sels.append(','.join(model._col_as_sel_names()))
+			q_tbls.append(model.table)
+			if prev_model:
+				if (rel_field = prev_model._get_rel_field(model)):
+					left_name = prev_model._col_name(rel_field)
+					right_name = model._col_name(rel_field.relation.peer_field)
+				elif (rel_field = model._get_rel_field(prev_model)):
+					left_name = model._col_name(rel_field)
+					right_name = prev_model._col_name(rel_field.relation.peer_field)
+				else:
+					raise ValueError('not found relation between %s and %s' % (prev_model.table, model.table))
+				q_wheres.append('%s=%s' % (left_name, right_name))
+			
+		if conditions:
+			for condition in conditions:
+				if condition.field.type == Field.STRING and condition.value.find('%%') != -1:
+					q_wheres.append('%s like %%s' % (condition.model._get_col_name(condition.field)))
+				else:
+					q_wheres.append('%s=%%s' % (condition.model._get_col_name(condition.field)))
+				q_values.append(condition.value)
+				
+		q = 'select %s from %s' % (','.join(q_sels), ','.join(q_tbls))
+		if len(q_wheres) > 0:
+			q = q + ' where ' + ' and '.join(q_wheres)
+		
+		logger.debug('query -> ' + q)
+		for value in q_values:
+			logger.debug('values -> {}'.format(value))
+		row_num = cls.db.execute(q, tuple(q_values))
+		logger.debug('result <- %d rows' % (row_num))
+		return row_num
 
+class FieldRelation(object):
+	def __init__(self, peer_model, peer_field):
+		self.peer_model = peer_model
+		self.peer_field = peer_field
 
 class Field(object):
 	STRING = 0
 	INTEGER = 1
 
-	def __init__(self, db_column, type, nullable=True, default=None, dictionable=True):
+	def __init__(self, db_column, type, nullable=True, default=None, dictionable=True, relation=None):
 		self.db_column = db_column
 		self.type = type
 		self.nullable = nullable
 		self.default = default
 		self.dictionable = dictionable
+		self.relation = relation
+		
+class QueryCondition(object):
+	def __init__(self, model, field, value):
+		self.model = model
+		self.field = field
+		self.value = value
 
 class BaseModel(object):
 	db = Database()
@@ -71,7 +124,7 @@ class BaseModel(object):
 			elif val.default is not None:
 				setattr(self, key, val.default)
 			elif val.nullable is False:
-				raise ValueError("%s must be setted" % (key))
+				raise ValueError('%s must be setted' % (key))
 			else:
 				setattr(self, key, None)
 			
@@ -91,101 +144,76 @@ class BaseModel(object):
 			if isinstance(val, Field):
 				fields[key] = val
 		return fields
+	
+	@classmethod
+	def _get_rel_field(cls, peer_model):
+		for field in cls._get_all_fields():
+			if field.peer_model = peer_model:
+				return field
+		return None
 			
+	@classmethod
+	def _col_name(cls, field):
+		return cls.table + '.' + field.db_column
+	
+	@classmethod
+	def _sel_name(cls, field):
+		return cls.table + '_' + field.db_column
+
+	@classmethod
+	def _col_as_sel_names(cls):
+		names = []
+		for field in cls._get_all_fields().itervalues():
+			names.append('%s as %s' % (cls._col_name(field), cls._sel_name(field)))
+		return names
+
+	@classmethod
+	def _select(cls, one=False, **kwargs):
+		objs = []
+		conditions = []
+		
+		for key, value in kwargs.items():
+			conditions.append(cls.condition(key, value))
+			
+		row_num = cls.db.select_by_model([cls], conditions)
+		if row_num > 0:
+			if one:
+				row = cls.db.fetch_one()
+				objs.append(cls.create_by_row(row))
+			else:
+				for rows in cls.db.fetch_all():
+					objs.append(cls.create_by_row(row))
+		return objs
+	
+	@classmethod
+	def condition(cls, key, value):
+		field = cls._get_field(key)
+			if field:
+				return QueryCondition(cls, field, value)
+			else:
+				raise ValueError('unknown field_key[%s]' % (key))
+
 	@classmethod
 	def create_by_row(cls, row):
 		args = {}
 		for key, val in cls._get_all_fields().iteritems():
-			sel_name = cls.sel_name(key)
+			sel_name = cls._sel_name(key)
 			if row.has_key(sel_name):
 				args[key] = row[sel_name]
 			elif row.has_key(val.db_column):
 				args[key] = row[val.db_column]
 		return cls(**args)
-	
-	@classmethod
-	def col_name(cls, key):
-		val = cls._get_field(key)
-		if val:
-			return cls.table + '.' + val.db_column
-		return None
-	
-	@classmethod
-	def sel_name(cls, key):
-		val = cls._get_field(key)
-		if val:
-			return cls.table + '_' + val.db_column
-		return None
-
-	@classmethod
-	def col_as_sel_names(cls):
-		names = []
-		for key in cls._get_all_fields().iterkeys():
-			names.append('%s as %s' % (cls.col_name(key), cls.sel_name(key)))
-		return names
 
 	@classmethod
 	def get(cls, **kwargs):
-		obj = None
-		q_names = []
-		q_values = []
-
-		for name, value in kwargs.items():
-			if cls._get_field(name):
-				q_names.append('%s=%%s' % (name))
-				q_values.append(value)
-			else:
-				raise ValueError("unknown field_key[%s]" % (name))
-
-		q = 'select %s from %s' % (','.join(cls.col_as_sel_names()), cls.table)
-		if len(q_names) > 0:
-			q = q + ' where ' + ' and '.join(q_names)
-		
-		logger.debug('query -> %s' % (q))
-		for value in q_values:
-			logger.debug('values -> {}'.format(value))
-		row_num = cls.db.execute(q, tuple(q_values))
-		logger.debug('result <- %d rows' % (row_num))
-		if row_num > 0:
-			row = cls.db.fetch_one()
-			obj = cls.create_by_row(row)
-		
-		return obj
+		objs = cls._select(one=True, **kwargs)
+		if len(objs) > 0:
+			return objs[0]
+		return None
 	
 	@classmethod
-	def search(cls, **kwargs):
-		objs = []
-		q_names = []
-		q_values = []
-		
-		for name, value in kwargs.items():
-			field_val = cls._get_field(name)
-			if field_val:
-				if field_val.type == Field.STRING:
-					q_name.append('%s like %%s' % (name))
-					q_values.append('%' + value + '%')
-				else:
-					q_name.append('%s=%%s' % (name))
-					q_values.append(value)
-			else:
-				raise ValueError("unknown field_key[%s]" % (name))
-
-		q = 'select %s from %s' % (','.join(cls.col_as_sel_names()), cls.table)
-		if len(q_names) > 0:
-			q = q + ' where ' + ' and '.join(q_names)
-		
-		logger.debug('query -> %s' % (q))
-		for value in q_values:
-			logger.debug('values -> {}'.format(value))
-		row_num = cls.db.execute(q, tuple(q_values))
-		logger.debug('result <- %d rows' % (row_num))
-		if row_num > 0:
-			row = cls.db.fetch_one()
-			while row:
-				objs.append(cls.create_by_row(row))
-				row = cls.db.fetch_one()
-		
-		return objs
+	def filter(cls, **kwargs):
+		return cls._select(one=False, **kwargs)
 	
 	def save(self):
 		'''

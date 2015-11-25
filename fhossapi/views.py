@@ -249,7 +249,7 @@ class UserDetailView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
-		user = User.get(name=name)
+		user = User.get_with_impi_impu(user_args={'name':name})
 		return Response(user.dict())
 
 	def put(self, request, name):
