@@ -150,7 +150,7 @@ class BaseModel(object):
 	@classmethod
 	def _get_rel_field(cls, peer_model):
 		for field in cls._get_all_fields():
-			if field.peer_model = peer_model:
+			if field.peer_model == peer_model:
 				return field
 		return None
 			
@@ -190,10 +190,10 @@ class BaseModel(object):
 	@classmethod
 	def condition(cls, key, value):
 		field = cls._get_field(key)
-			if field:
-				return QueryCondition(cls, field, value)
-			else:
-				raise ValueError('unknown field_key[%s]' % (key))
+		if field:
+			return QueryCondition(cls, field, value)
+		else:
+			raise ValueError('unknown field_key[%s]' % (key))
 
 	@classmethod
 	def create_by_row(cls, row):
