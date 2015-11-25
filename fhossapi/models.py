@@ -83,7 +83,7 @@ class Impi(BaseModel):
 	table		= 'impi'
 
 	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
-	id_imsu		= Field('id_imsu', Field.INTEGER, default=-1, dictionable=False, relation=FieldRelation(User, User.id))
+	id_imsu		= Field('id_imsu', Field.INTEGER, default=-1, dictionable=False, relation=Field.Relation(User, User.id))
 	identity	= Field('identity', Field.STRING, nullable=False)
 	secret_key	= Field('k', Field.STRING, nullable=False)
 	avail_auth	= Field('auth_scheme', Field.INTEGER, nullable=False, default=129)
@@ -98,8 +98,8 @@ class ImpiImpu(BaseModel):
 	table		= 'impi_impu'
 	
 	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
-	id_impi		= Field('id_impi', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(Impi, Impi.id))
-	id_impu		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(Impu, Impu.id))
+	id_impi		= Field('id_impi', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impi, Impi.id))
+	id_impu		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impu, Impu.id))
 	user_status	= Field('user_state', Field.INTEGER, nullable=False, default=0, dictionable=False)
 
 class Impu(BaseModel):
@@ -120,8 +120,8 @@ class Impu(BaseModel):
 class ImpuVisitedNetwork(BaseModel):
 	table		= 'impu_visited_network'
 	id			= Field('id', Field.INTEGER, nullable=False, default=-1, dictionable=False)
-	id_impi		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(Impu, Impu.id))
-	id_impu		= Field('id_visited_network', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=FieldRelation(VisitedNetwork, VisitedNetwork.id))
+	id_impi		= Field('id_impu', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(Impu, Impu.id))
+	id_impu		= Field('id_visited_network', Field.INTEGER, nullable=False, default=0, dictionable=False, relation=Field.Relation(VisitedNetwork, VisitedNetwork.id))
 	
 class VisitedNetwork(BaseModel):
 	table		= 'visited_network'

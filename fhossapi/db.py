@@ -72,14 +72,14 @@ class Database(object):
 		logger.debug('result <- %d rows' % (row_num))
 		return row_num
 
-class FieldRelation(object):
-	def __init__(self, peer_model, peer_field):
-		self.peer_model = peer_model
-		self.peer_field = peer_field
-
 class Field(object):
 	STRING = 0
 	INTEGER = 1
+	
+	class Relation(object):
+		def __init__(self, peer_model, peer_field):
+			self.peer_model = peer_model
+			self.peer_field = peer_field
 
 	def __init__(self, db_column, type, nullable=True, default=None, dictionable=True, relation=None):
 		self.db_column = db_column
