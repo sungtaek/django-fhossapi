@@ -1,5 +1,5 @@
 from django.db import models
-from .db import BaseModel, Field, ModelRelation
+from .db import BaseModel, Field
 import logging
 
 # Create your models here.
