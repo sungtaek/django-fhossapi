@@ -41,12 +41,14 @@ class Database(object):
 			q_sels.append(','.join(model._col_as_sel_names()))
 			q_tbls.append(model.table)
 			if prev_model:
-				if (rel_field = prev_model._get_rel_field(model)) is not None:
-					left_name = prev_model._col_name(rel_field)
-					right_name = model._col_name(rel_field.relation.peer_field)
-				elif (rel_field = model._get_rel_field(prev_model)) is not None:
-					left_name = model._col_name(rel_field)
-					right_name = prev_model._col_name(rel_field.relation.peer_field)
+				prev_rel_field = prev_model._get_rel_field(model)
+				cur_rel_field = model._get_rel_field(prev_model)
+				if prev_rel_field:
+					left_name = prev_model._col_name(prev_rel_field)
+					right_name = model._col_name(prev_rel_field.relation.peer_field)
+				elif cur_rel_field:
+					left_name = model._col_name(cur_rel_field)
+					right_name = prev_model._col_name(cur_rel_field.relation.peer_field)
 				else:
 					raise ValueError('not found relation between %s and %s' % (prev_model.table, model.table))
 				q_wheres.append('%s=%s' % (left_name, right_name))
