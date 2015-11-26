@@ -153,7 +153,9 @@ class UserDetailView(APIView):
 		user['impi'] = []
 		for impi in imsu.impis.all():
 			impi_dic = model_to_dict(impi)
-			impi_dic['impu'] = impi.impus.all().values()
+			impi_dic['impu'] = []
+			for impu in impi.impus.all():
+				impi_dic['impu'].append(model_to_dict(impu))
 			user['impi'].append(impi_dic)
 
 		return Response(user)
