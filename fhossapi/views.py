@@ -148,7 +148,7 @@ class UserDetailView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
-		imsu = Imsu.objects.select_related('impis').get(name=name)
+		imsu = Imsu.objects.prefetch_related('impis').get(name=name)
 		user = model_to_dict(imsu)
 		user['impi'] = []
 		for impi in imsu.impis.all():
