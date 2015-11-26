@@ -57,7 +57,7 @@ class Impi(models.Model):
 class ImpiImpu(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True)
     impi        = models.ForeignKey('Impi', db_column='id_impi')
-    impu        = models.ForeignKey('Impi', db_column='id_impu')
+    impu        = models.ForeignKey('Impu', db_column='id_impu')
     user_status = models.IntegerField(db_column='user_state', default=0)
     
     class Meta:
