@@ -159,7 +159,7 @@ class UserDetailView(APIView):
 				impi_dic['impu'].append(model_to_dict(impu))
 			user['impi'].append(impi_dic)
 		'''
-		impu = Impu.objects.prefetch_related('impis__imsu').filter(identity__contains=name)
+		impu = Impu.objects.filter(identity__contains=name).prefetch_related('impis__imsu')
 
 		return Response(model_to_dict(impu))
 
