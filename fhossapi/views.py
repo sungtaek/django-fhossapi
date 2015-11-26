@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate
+from django.forms.models import model_to_dict
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
@@ -147,8 +148,8 @@ class UserDetailView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
-		user = Imsu.objects.get(name=name).values()
-		return Response(user)
+		user = Imsu.objects.get(name=name)
+		return Response(model_to_dict(user))
 
 	def put(self, request, name):
 		resp = {}
