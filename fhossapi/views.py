@@ -9,98 +9,11 @@ from rest_framework.response import Response
 from rest_framework.exceptions import *
 import logging
 import json
-from .models import User
+from .models import *
 
 # Create your views here.
 
 logger = logging.getLogger('fhossapi')
-
-def get_authname(auth):
-	if auth == 1:
-		return 'Digest-AKAv1-MD5'
-	elif auth == 2:
-		return 'Digest-AKAv2-MD5'
-	elif auth == 4:
-		return 'Digest-MD5'
-	elif auth == 8:
-		return 'Digest'
-	elif auth == 16:
-		return 'HTTP-Digest-MD5'
-	elif auth == 32:
-		return 'Early-IMS-Security'
-	elif auth == 64:
-		return 'NASS-Bundled'
-	elif auth == 128:
-		return 'SIP-Digest'
-	else:
-		return 'Unknown'
-
-def get_impu_by_row(row, detail=False):
-	if row['barring'] == 0:
-		barring = False
-	else:
-		barring = True
-
-	if row['type'] == 0:
-		impu_type = 'Public User Identity'
-	elif row['type'] == 1:
-		impu_type = 'Distinct PSI'
-	elif row['type'] == 2:
-		impu_type = 'Wildcarded PSI'
-	else:
-		impu_type = 'Unknown'
-
-	if row['user_state'] == 0:
-		user_state = 'Not Registered'
-	elif row['user_state'] == 1:
-		user_state = 'Registered'
-	elif row['user_state'] == 2:
-		user_state = 'Unregistered'
-	elif row['user_state'] == 3:
-		user_state = 'Auth-Pending'
-	else:
-		user_state = 'Unknown'
-
-	if detail:
-		return {
-			'identity': row['identity'],
-			'type': impu_type,
-			'barring': barring,
-			'user_state': user_state,
-			'service_id': row['id_sp']
-		}
-	else:
-		return {
-			'identity': row['identity'],
-			'user_state': user_state,
-		}
-
-def get_impi_by_row(row):
-
-	if row['default_auth_scheme'] == 1:
-		default_auth = 'Digest-AKAv1-MD5'
-	elif row['default_auth_scheme'] == 2:
-		default_auth = 'Digest-AKAv2-MD5'
-	elif row['default_auth_scheme'] == 4:
-		default_auth = 'Digest-MD5'
-	elif row['default_auth_scheme'] == 8:
-		default_auth = 'Digest'
-	elif row['default_auth_scheme'] == 16:
-		default_auth = 'HTTP-Digest-MD5'
-	elif row['default_auth_scheme'] == 32:
-		default_auth = 'Early-IMS-Security'
-	elif row['default_auth_scheme'] == 64:
-		default_auth = 'NASS-Bundled'
-	elif row['default_auth_scheme'] == 128:
-		default_auth = 'SIP-Digest'
-	else:
-		default_auth = 'Unknown'
-
-	return {
-		'identity': row['identity'],
-		'password': row['k'],
-		'default_auth': default_auth
-	}
 
 def index(request):
 	return HttpResponseRedirect("/hss.api/docs")
@@ -197,22 +110,7 @@ class UserSearchView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request):
-		q = request.GET
 		resp = {}
-		users = None
-
-		if q.has_key('name') and q['name'] != '':
-			users = User.search(name=q['name'])
-		if q.has_key('impi') and q['impi'] != '':
-			users = User.search_by_impi(identity=q['impi'])
-		if q.has_key('impu') and q['impu'] != '':
-			users = User.search_by_impu(identity=q['impu'])
-			
-		if users:
-			resp['users'] = []
-			for user in users:
-				resp['users'].append(user.dict())
-
 		return Response(resp)
 
 class UserDetailView(APIView):
@@ -249,8 +147,8 @@ class UserDetailView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
-		user = User.get_with_impi_impu(user_args={'name':name})
-		return Response(user.dict())
+		user = Imsu.object.select_related('impis__impus').get(name=name).values()
+		return Response(user)
 
 	def put(self, request, name):
 		resp = {}
