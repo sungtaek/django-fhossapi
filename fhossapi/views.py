@@ -148,7 +148,6 @@ class UserDetailView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
-		'''
 		imsu = Imsu.objects.prefetch_related('impis').get(name=name)
 		user = model_to_dict(imsu)
 		user['impi'] = []
@@ -158,10 +157,8 @@ class UserDetailView(APIView):
 			for impu in impi.impus.all():
 				impi_dic['impu'].append(model_to_dict(impu))
 			user['impi'].append(impi_dic)
-		'''
-		impu = Impu.objects.filter(identity__contains=name).prefetch_related('impis__imsu')
 
-		return Response(model_to_dict(impu))
+		return Response(user)
 
 	def put(self, request, name):
 		resp = {}
