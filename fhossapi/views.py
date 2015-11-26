@@ -150,7 +150,7 @@ class UserDetailView(APIView):
 	def get(self, request, name):
 		imsu = Imsu.objects.get(name=name)
 		user = model_to_dict(imsu)
-		user['impi'] = imsu.impi_set.all().values()
+		user['impi'] = imsu.impis.all().values()
 		return Response(user)
 
 	def put(self, request, name):
