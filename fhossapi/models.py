@@ -92,7 +92,7 @@ class Impu(models.Model):
     barring     = models.BooleanField(db_column='barring', default=False)
     user_status = models.IntegerField(db_column='user_state', choices=USER_STATUS_CHOICE, default=NOT_REGISTERED)
     service_profile=models.IntegerField(db_column='id_sp', default=-1)
-    implict_set = models.IntegerField(db_column='id_implict_set', default=-1)
+    implicit_set = models.IntegerField(db_column='id_implicit_set', default=-1)
     charging_info_set=models.IntegerField(db_column='id_charging_info', null=True, default=-1)
     wildcard_psi= models.CharField(db_column='wildcard_psi', max_length=255, default='')
     display_name= models.CharField(db_column='display_name', max_length=255, default='')
