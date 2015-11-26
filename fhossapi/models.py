@@ -48,6 +48,7 @@ class Impi(models.Model):
     zh_uicc_type= models.IntegerField(db_column='zh_uicc_type', null=True, default=0)
     zh_key_life_time= models.IntegerField(db_column='zh_key_life_time', null=True, default=3600)
     zh_def_auth = models.IntegerField(db_column='zh_default_auth_scheme', choices=AUTH_CHOICE, default=SIP_DIGEST)
+    impus       = models.ManyToManyField('Impu', through='ImpiImpu')
 
     class Meta:
         db_table = 'impi'
@@ -56,8 +57,8 @@ class Impi(models.Model):
 
 class ImpiImpu(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True)
-    impi        = models.ForeignKey('Impi', db_column='id_impi')
-    impu        = models.ForeignKey('Impu', db_column='id_impu')
+    impi        = models.ForeignKey('Impi', db_column='id_impi', related_name='impis')
+    impu        = models.ForeignKey('Impu', db_column='id_impu', related_name='impus')
     user_status = models.IntegerField(db_column='user_state', default=0)
     
     class Meta:
@@ -97,7 +98,7 @@ class Impu(models.Model):
     display_name= models.CharField(db_column='display_name', max_length=255, default='')
     psi_activation= models.BooleanField(db_column='psi_activation', default=False)
     can_register= models.BooleanField(db_column='can_register', default=True)
-    impis       = models.ManyToManyField('Impi', through='ImpiImpu', through_fields=('impi','impu'), related_name='impus', related_query_name='impu')
+    impis       = models.ManyToManyField('Impi', through='ImpiImpu')
     
     class Meta:
         db_table = 'impu'
