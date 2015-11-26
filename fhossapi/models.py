@@ -3,10 +3,10 @@ from django.db import models
 # Create your models here
 
 class Imsu(models.Model):
-    id          = models.IntegerField(primary_key=True)
-    name        = models.CharField(max_length=255, unique=True)
-    scscf_name  = models.CharField(max_length=255, null=True, blank=True)
-    diameter_name = models.CharField(max_length=255, null=True, default='', blank=True)
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    scscf_name  = models.CharField(db_column='scscf_name', max_length=255, null=True, blank=True)
+    diameter_name = models.CharField(db_column='diameter_name', max_length=255, null=True, default='', blank=True)
     capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
     pref_scscf  = models.IntegerField(db_column='id_preferred_scscf_set', null=True, default=-1)
     
@@ -34,8 +34,8 @@ class Impi(models.Model):
         (SIP_DIGEST, 'SIP-Digest'),
     )
 
-    id          = models.IntegerField(db_column='id', primary_key=True)
-    imsu        = models.ForeignKey('Imsu', related_name='impis', related_query_name='impi', db_column='id_imsu')
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    imsu        = models.ForeignKey('Imsu', db_column='id_imsu', related_name='impis', related_query_name='impi', editable=False)
     identity    = models.CharField(db_column='identity', max_length=255, unique=True)
     secret_key  = models.BinaryField(db_column='k')
     avail_auth  = models.IntegerField(db_column='auth_scheme', default=129)
@@ -56,9 +56,9 @@ class Impi(models.Model):
         
 
 class ImpiImpu(models.Model):
-    id          = models.IntegerField(db_column='id', primary_key=True)
-    impi        = models.ForeignKey('Impi', db_column='id_impi', related_name='impis')
-    impu        = models.ForeignKey('Impu', db_column='id_impu', related_name='impus')
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    impi        = models.ForeignKey('Impi', db_column='id_impi', related_name='impis', editable=False)
+    impu        = models.ForeignKey('Impu', db_column='id_impu', related_name='impus', editable=False)
     user_status = models.IntegerField(db_column='user_state', default=0)
     
     class Meta:
@@ -86,7 +86,7 @@ class Impu(models.Model):
         (AUTH_PENDING, 'Auth Pending'),
     )
 
-    id          = models.IntegerField(db_column='id', primary_key=True)
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
     identity    = models.CharField(db_column='identity', max_length=255, unique=True)
     impu_type   = models.IntegerField(db_column='type', choices=IMPU_TYPE_CHOICE, default=PUBLIC_USER_IDENTITY)
     barring     = models.BooleanField(db_column='barring', default=False)
@@ -99,24 +99,25 @@ class Impu(models.Model):
     psi_activation= models.BooleanField(db_column='psi_activation', default=False)
     can_register= models.BooleanField(db_column='can_register', default=True)
     impis       = models.ManyToManyField('Impi', through='ImpiImpu')
+    visited_networks = models.ManyToManyField('VisitedNetwork', through='ImpuVisitedNetwork')
     
     class Meta:
         db_table = 'impu'
         managed = False
         
 class ImpuVisitedNetwork(models.Model):
-    id          = models.IntegerField(db_column='id', primary_key=True)
-    impu        = models.ForeignKey('Impu', db_column='id_impu')
-    visited_network= models.ForeignKey('VisitedNetwork', db_column='id_visited_network')
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    impu        = models.ForeignKey('Impu', db_column='id_impu', related_name='impus', editable=False)
+    visited_network= models.ForeignKey('VisitedNetwork', db_column='id_visited_network', related_name='visited_networks', editable=False)
     
     class Meta:
         db_table = 'impu_visited_network'
         managed = False
         
 class VisitedNetwork(models.Model):
-    id          = models.IntegerField(db_column='id', primary_key=True)
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
     identity    = models.CharField(db_column='identity', max_length=255, unique=True)
-    impus       = models.ManyToManyField('Impu', through='ImpuVisitedNetwork', through_fields=('impu','visited_network'), related_name='visited_networks', related_query_name='visited_network')
+    impus       = models.ManyToManyField('Impu', through='ImpuVisitedNetwork')
     
     class Meta:
         db_table = 'visited_network'
