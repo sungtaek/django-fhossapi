@@ -150,7 +150,7 @@ class UserDetailView(APIView):
 	def get(self, request, name):
 		try:
 			imsu = Imsu.objects.prefetch_related('impis').get(name=name)
-		except e:
+		except:
 			raise NotFound('User[%s] not found.' % (name))
 		user = model_to_dict(imsu)
 		user['impi'] = []
