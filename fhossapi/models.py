@@ -48,7 +48,7 @@ class Impi(models.Model):
     zh_uicc_type= models.IntegerField(db_column='zh_uicc_type', null=True, default=0)
     zh_key_life_time= models.IntegerField(db_column='zh_key_life_time', null=True, default=3600)
     zh_def_auth = models.IntegerField(db_column='zh_default_auth_scheme', choices=AUTH_CHOICE, default=SIP_DIGEST)
-    impus       = models.ManyToManyField('Impu', through='ImpiImpu')
+    impus       = models.ManyToManyField('Impu', through='ImpiImpu', editable=False)
 
     class Meta:
         db_table = 'impi'
@@ -98,8 +98,8 @@ class Impu(models.Model):
     display_name= models.CharField(db_column='display_name', max_length=255, default='')
     psi_activation= models.BooleanField(db_column='psi_activation', default=False)
     can_register= models.BooleanField(db_column='can_register', default=True)
-    impis       = models.ManyToManyField('Impi', through='ImpiImpu')
-    visited_networks = models.ManyToManyField('VisitedNetwork', through='ImpuVisitedNetwork')
+    impis       = models.ManyToManyField('Impi', through='ImpiImpu', editable=False)
+    visited_networks = models.ManyToManyField('VisitedNetwork', through='ImpuVisitedNetwork', editable=False)
     
     class Meta:
         db_table = 'impu'
@@ -117,7 +117,7 @@ class ImpuVisitedNetwork(models.Model):
 class VisitedNetwork(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
     identity    = models.CharField(db_column='identity', max_length=255, unique=True)
-    impus       = models.ManyToManyField('Impu', through='ImpuVisitedNetwork')
+    impus       = models.ManyToManyField('Impu', through='ImpuVisitedNetwork', editable=False)
     
     class Meta:
         db_table = 'visited_network'
