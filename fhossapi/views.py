@@ -112,6 +112,12 @@ class UserSearchView(APIView):
 
 	def get(self, request):
 		resp = {}
+		users = []
+		if request.GET.has_key('impi'):
+			imsus = Imsu.objects.filter(impis__identity=request.GET['impi'])
+			for imsu in imsus:
+				users.append(model_to_dict(imsu))
+			resp['user'] = users
 		return Response(resp)
 
 class UserDetailView(APIView):
