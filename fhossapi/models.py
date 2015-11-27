@@ -35,7 +35,7 @@ class Impi(models.Model):
     )
 
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
-    imsu        = models.ForeignKey('Imsu', db_column='id_imsu', related_name='impis', related_query_name='impi', editable=False)
+    imsu        = models.ForeignKey('Imsu', db_column='id_imsu', related_name='impis', editable=False)
     identity    = models.CharField(db_column='identity', max_length=255, unique=True)
     secret_key  = models.BinaryField(db_column='k')
     avail_auth  = models.IntegerField(db_column='auth_scheme', default=129)
