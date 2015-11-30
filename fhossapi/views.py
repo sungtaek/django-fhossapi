@@ -166,7 +166,7 @@ class UserDetailView(APIView):
 		resp = {}
 		imsu = None
 		try:
-			imsu = Imsu.objects.prefetch_related('impis__impus').filter(name=name)
+			imsu = Imsu.objects.prefetch_related('impis__impus').get(name=name)
 		except:
 			raise NotFound('User[%s] not found.' % (name))
 
