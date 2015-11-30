@@ -57,35 +57,6 @@ class AuthToken(APIView):
 #resp['created'] = created
 		return Response(resp)
 
-class UserListView(APIView):
-	"""
-	get list of subscriber
-	---
-	"""
-	# permission_classes = (IsAuthenticated,)
-
-	def get(self, request):
-		resp = {}
-		return Response(resp)
-
-class UserAddView(APIView):
-	"""
-	manage subscriber
-	---
-	POST:
-		parameters:
-			- name: user_info
-			  description: user info
-			  required: true
-			  type: json
-			  paramType: body
-	"""
-	# permission_classes = (IsAuthenticated,)
-
-	def post(self, request):
-		resp = {}
-		return Response(resp)
-	
 class UserSearchView(APIView):
 	"""
 	search subscriber
@@ -112,19 +83,31 @@ class UserSearchView(APIView):
 
 	def get(self, request):
 		resp = {}
-		users = []
-		'''
-		impus = Impu.objects.prefetch_related('impis__imsu').filter(impis__imsu__name='sungtaek')
-		'''
+		
+		filters = {}
+		if request.GET.has_key('name'):
+			filters['name__icontains'] = request.GET['name']
 		if request.GET.has_key('impi'):
-			imsus = Impi.objects.select_related('imsu').filter(impis__identity__icontains=request.GET['impi'])
-			for imsu in imsus:
-				user = model_to_dict(imsu)
-				user['impi'] = []
-				for impi in imsu.impis.all():
-					user['impi'].append(model_to_dict(impi))
-				users.append(user)
-			resp['user'] = users
+			filters['impis__identity__icontains'] = request.GET['impi']
+		if request.GET.has_key('impu'):
+			filters['impis__impus__identity__icontains'] = request.GET['impu']
+		#if request.GET.has_key('regi') and request.GET['regi']:
+		#	filters['impis__impus__user_status'] = 1
+		
+		imsus = Imsu.objects.prefetch_related('impis__impus').filter(**filters)
+		users = []
+		for imsu in imsus:
+			user_dic = model_to_dict(imsu)
+			user_dic['impi'] = []
+			for impi in imsu.impis.all():
+				impi_dic = model_to_dict(impi)
+				impi_dic['impu'] = []
+				for impu in impi.impus.all():
+					impu_dic = model_to_dict(impu)
+					impi_dic['impu'].append(impu_dic)
+				user_dic['impi'].append(impi_dic)
+			users.append(user_dic)
+		resp['user'] = users
 		return Response(resp)
 
 class UserDetailView(APIView):
@@ -138,6 +121,18 @@ class UserDetailView(APIView):
 			  required: true
 			  type: string
 			  paramType: path
+	POST:
+		parameters:
+			- name: name
+			  description: user name
+			  required: true
+			  type: string
+			  paramType: path
+			- name: user_info
+			  description: user info
+			  required: true
+			  type: json
+			  paramType: body
 	PUT:
 		parameters:
 			- name: name
@@ -184,7 +179,7 @@ class UserDetailView(APIView):
 		resp = {}
 		return Response(resp)
 
-class ServiceList(APIView):
+class ServiceSearchView(APIView):
 	"""
 	get list of service
 	---
@@ -195,25 +190,8 @@ class ServiceList(APIView):
 		resp = {}
 		return Response(resp)
 
-class ServiceAdd(APIView):
-	"""
-	manage service 
-	---
-	POST:
-		parameters:
-			- name: user_info
-			  description: user info
-			  required: true
-			  type: json
-			  paramType: body
-	"""
-	# permission_classes = (IsAuthenticated,)
 
-	def post(self, request):
-		resp = {}
-		return Response(resp)
-
-class Service(APIView):
+class ServiceDetailView(APIView):
 	"""
 	manage service 
 	---
