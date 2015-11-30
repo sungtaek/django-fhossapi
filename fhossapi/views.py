@@ -217,6 +217,30 @@ class ServiceSearchView(APIView):
 	"""
 	get list of service
 	---
+	GET:
+		parameters:
+			- name: name
+			  description: service_profile name
+			  required: false
+			  type: string
+			  paramType: query
+			- name: as
+			  description: aplication_server name
+			  required: false
+			  type: string
+			  paramType: query
+			- name: offset
+			  description: query offset (default:0)
+			  required: false
+			  type: integer
+			  default: 0
+			  paramType: query
+			- name: limit
+			  description: query limit (default:10, max:30)
+			  required: false
+			  type: integer
+			  default: 10
+			  paramType: query
 	"""
 	# permission_classes = (IsAuthenticated,)
 
@@ -231,42 +255,58 @@ class ServiceDetailView(APIView):
 	---
 	GET:
 		parameters:
-			- name: identity
-			  description: impu identity
+			- name: name
+			  description: service_profile name
 			  required: true
 			  type: string
 			  paramType: path
+	POST:
+		parameters:
+			- name: name
+			  description: service_profile name
+			  required: true
+			  type: string
+			  paramType: path
+			- name: profile_info
+			  description: service_profile info
+			  required: true
+			  type: json
+			  paramType: body
 	PUT:
 		parameters:
-			- name: identity
-			  description: impu identity
+			- name: name
+			  description: service_profile name
 			  required: true
 			  type: string
 			  paramType: path
-			- name: user_info
-			  description: user info
+			- name: profile_info
+			  description: service_profile info
 			  required: true
 			  type: json
 			  paramType: body
 	DELETE:
 		parameters:
-			- name: identity
-			  description: impu identity
+			- name: name
+			  description: service_profile name
 			  required: true
 			  type: string
 			  paramType: path
 	"""
 	# permission_classes = (IsAuthenticated,)
 
-	def get(self, request, identity):
+	def get(self, request, name):
 		resp = {}
 		return Response(resp)
 
-	def put(self, request, identity):
+	def post(self, request, name):
 		resp = {}
 		return Response(resp)
 
-	def delete(self, request, identity):
+	def put(self, request, name):
+		resp = {}
+		return Response(resp)
+
+	def delete(self, request, name):
 		resp = {}
 		return Response(resp)
 

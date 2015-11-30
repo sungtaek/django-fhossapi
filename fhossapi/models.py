@@ -11,6 +11,7 @@ class Imsu(models.Model):
     pref_scscf  = models.IntegerField(db_column='id_preferred_scscf_set', null=True, default=-1)
     
     class Meta:
+        app_label = 'hss_app'
         db_table = 'imsu'
         managed = False
         
@@ -51,6 +52,7 @@ class Impi(models.Model):
     #impus       = models.ManyToManyField('Impu', through='ImpiImpu', editable=False)
 
     class Meta:
+        app_label = 'hss_app'
         db_table = 'impi'
         managed = False
         
@@ -62,6 +64,7 @@ class ImpiImpu(models.Model):
     user_status = models.IntegerField(db_column='user_state', default=0)
     
     class Meta:
+        app_label = 'hss_app'
         db_table = 'impi_impu'
         managed = False
         
@@ -102,6 +105,7 @@ class Impu(models.Model):
     visited_networks = models.ManyToManyField('VisitedNetwork', through='ImpuVisitedNetwork', editable=False)
     
     class Meta:
+        app_label = 'hss_app'
         db_table = 'impu'
         managed = False
         
@@ -111,24 +115,8 @@ class ServiceProfile(models.Model):
     cn_service_auth= models.IntegerField(db_column='cn_service_auth', null=True, default=0)
     
     class Meta:
+        app_label = 'hss_app'
         db_table = 'sp'
         managed = False
         
-class ImpuVisitedNetwork(models.Model):
-    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
-    impu        = models.ForeignKey('Impu', db_column='id_impu', related_name='impus', editable=False)
-    visited_network= models.ForeignKey('VisitedNetwork', db_column='id_visited_network', related_name='visited_networks', editable=False)
-    
-    class Meta:
-        db_table = 'impu_visited_network'
-        managed = False
-        
-class VisitedNetwork(models.Model):
-    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
-    identity    = models.CharField(db_column='identity', max_length=255, unique=True)
-    impus       = models.ManyToManyField('Impu', through='ImpuVisitedNetwork', editable=False)
-    
-    class Meta:
-        db_table = 'visited_network'
-        managed = False
 
