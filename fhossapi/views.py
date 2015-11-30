@@ -113,8 +113,11 @@ class UserSearchView(APIView):
 	def get(self, request):
 		resp = {}
 		users = []
+		'''
+		impus = Impu.objects.prefetch_related('impis__imsu').filter(impis__imsu__name='sungtaek')
+		'''
 		if request.GET.has_key('impi'):
-			imsus = Imsu.objects.select_related('impis').filter(impis__identity__icontains=request.GET['impi'])
+			imsus = Impi.objects.select_related('imsu').filter(impis__identity__icontains=request.GET['impi'])
 			for imsu in imsus:
 				user = model_to_dict(imsu)
 				user['impi'] = []
