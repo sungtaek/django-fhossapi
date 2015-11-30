@@ -171,6 +171,10 @@ class UserDetailView(APIView):
 
 		return Response(user)
 
+	def post(self, request, name):
+		resp = {}
+		return Response(resp)
+
 	def put(self, request, name):
 		resp = {}
 		return Response(resp)
