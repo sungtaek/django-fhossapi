@@ -127,13 +127,13 @@ class UserSearchView(APIView):
 			filters['impis__impus__identity__icontains'] = request.GET['impu']
 		if request.GET.has_key('regi') and request.GET['regi']:
 			filters['impis__impus__user_status'] = 1
-		if request.GET.has_key('offset') and request.GET['offset'] > 0:
-			offset = request.GET['offset']
-		if request.GET.has_key('limit') and request.GET['limit'] > 0:
-			if request.GET['limit'] > 30:
+		if request.GET.has_key('offset') and int(request.GET['offset']) > 0:
+			offset = int(request.GET['offset'])
+		if request.GET.has_key('limit') and int(request.GET['limit']) > 0:
+			if int(request.GET['limit']) > 30:
 				limit = 30
 			else:
-				limit = request.GET['limit']
+				limit = int(request.GET['limit'])
 		
 		imsus = Imsu.objects.prefetch_related('impis__impus__service_profile').filter(**filters).order_by('name')[offset:limit]
 		users = []
