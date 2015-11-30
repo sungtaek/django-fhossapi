@@ -91,7 +91,7 @@ class Impu(models.Model):
     impu_type   = models.IntegerField(db_column='type', choices=IMPU_TYPE_CHOICE, default=PUBLIC_USER_IDENTITY)
     barring     = models.BooleanField(db_column='barring', default=False)
     user_status = models.IntegerField(db_column='user_state', choices=USER_STATUS_CHOICE, default=NOT_REGISTERED)
-    service_profile=models.IntegerField(db_column='id_sp', default=-1)
+    service_profile=models.ForeignKey('ServiceProfile', db_column='id_sp', related_name='impus', editable=False)
     implicit_set = models.IntegerField(db_column='id_implicit_set', default=-1)
     charging_info_set=models.IntegerField(db_column='id_charging_info', null=True, default=-1)
     wildcard_psi= models.CharField(db_column='wildcard_psi', max_length=255, default='')
@@ -103,6 +103,15 @@ class Impu(models.Model):
     
     class Meta:
         db_table = 'impu'
+        managed = False
+        
+class ServiceProfile(models.Model):
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    name        = models.CharField(db_column='name', max_length=16, unique=True)
+    cn_service_auth= models.IntegerField(db_column='cn_service_auth', null=True, default=0)
+    
+    class Meta:
+        db_table = 'sp'
         managed = False
         
 class ImpuVisitedNetwork(models.Model):
