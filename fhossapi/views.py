@@ -117,17 +117,7 @@ class UserSearchView(APIView):
 		imsus = Imsu.objects.prefetch_related('impis__impus__service_profile').filter(**filters)
 		users = []
 		for imsu in imsus:
-			user_dic = model_to_dict(imsu)
-			user_dic['impi'] = []
-			for impi in imsu.impis.all():
-				impi_dic = model_to_dict(impi)
-				impi_dic['impu'] = []
-				for impu in impi.impus.all():
-					impu_dic = model_to_dict(impu)
-					impu_dic['service_profile'] = impu.service_profile.name
-					impi_dic['impu'].append(impu_dic)
-				user_dic['impi'].append(impi_dic)
-			users.append(user_dic)
+			users.append(get_user_dic(imsu))
 		resp['user'] = users
 		resp['count'] = len(users)
 		return Response(resp)
