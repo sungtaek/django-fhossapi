@@ -114,6 +114,7 @@ class UserSearchView(APIView):
 				user_dic['impi'].append(impi_dic)
 			users.append(user_dic)
 		resp['user'] = users
+		resp['count'] = len(users)
 		return Response(resp)
 
 class UserDetailView(APIView):
@@ -162,19 +163,24 @@ class UserDetailView(APIView):
 	# permission_classes = (IsAuthenticated,)
 
 	def get(self, request, name):
+		resp = {}
+		imsu = None
 		try:
-			imsu = Imsu.objects.prefetch_related('impis').get(name=name)
+			imsu = Imsu.objects.prefetch_related('impis__impus').filter(name=name)
 		except:
 			raise NotFound('User[%s] not found.' % (name))
-		user = model_to_dict(imsu)
-		user['impi'] = []
+
+		user_dic = model_to_dict(imsu)
+		user_dic['impi'] = []
 		for impi in imsu.impis.all():
 			impi_dic = model_to_dict(impi)
 			impi_dic['impu'] = []
 			for impu in impi.impus.all():
-				impi_dic['impu'].append(model_to_dict(impu))
-			user['impi'].append(impi_dic)
-
+				impu_dic = model_to_dict(impu)
+				impi_dic['impu'].append(impu_dic)
+			user_dic['impi'].append(impi_dic)
+			
+		resp['user'] = user_dic
 		return Response(user)
 
 	def post(self, request, name):
