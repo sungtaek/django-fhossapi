@@ -98,6 +98,18 @@ class UserSearchView(APIView):
 			  type: boolean
 			  default: false
 			  paramType: query
+			- name: offset
+			  description: query offset (default:0)
+			  required: false
+			  type: integer
+			  default: 0
+			  paramType: query
+			- name: limit
+			  description: query limit (default:10, max:30)
+			  required: false
+			  type: integer
+			  default: 10
+			  paramType: query
 	"""
 	# permission_classes = (IsAuthenticated,)
 
@@ -105,6 +117,8 @@ class UserSearchView(APIView):
 		resp = {}
 		
 		filters = {}
+		offset = 0
+		limit = 10
 		if request.GET.has_key('name'):
 			filters['name__icontains'] = request.GET['name']
 		if request.GET.has_key('impi'):
@@ -113,13 +127,22 @@ class UserSearchView(APIView):
 			filters['impis__impus__identity__icontains'] = request.GET['impu']
 		if request.GET.has_key('regi') and request.GET['regi']:
 			filters['impis__impus__user_status'] = 1
+		if request.GET.has_key('offset') and request.GET['offset'] > 0:
+			offset = request.GET['offset']
+		if request.GET.has_key('limit') and request.GET['limit'] > 0:
+			if request.GET['limit'] > 30:
+				limit = 30
+			else:
+				limit = request.GET['limit']
 		
-		imsus = Imsu.objects.prefetch_related('impis__impus__service_profile').filter(**filters)
+		imsus = Imsu.objects.prefetch_related('impis__impus__service_profile').order_by('name')[offset:limit].filter(**filters)
 		users = []
 		for imsu in imsus:
 			users.append(get_user_dic(imsu))
-		resp['user'] = users
 		resp['count'] = len(users)
+		resp['offset'] = offset
+		resp['limit'] = limit
+		resp['user'] = users
 		return Response(resp)
 
 class UserDetailView(APIView):
