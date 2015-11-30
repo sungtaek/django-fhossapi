@@ -16,6 +16,20 @@ from .models import *
 
 logger = logging.getLogger('fhossapi')
 
+
+def get_user_dict(imsu):
+	user_dic = model_to_dict(imsu)
+	user_dic['impi'] = []
+	for impi in imsu.impis.all():
+		impi_dic = model_to_dict(impi)
+		impi_dic['impu'] = []
+		for impu in impi.impus.all():
+			impu_dic = model_to_dict(impu)
+			impu_dic['service_profile'] = impu.service_profile.name
+			impi_dic['impu'].append(impu_dic)
+		user_dic['impi'].append(impi_dic)
+	return user_dic
+
 def index(request):
 	return HttpResponseRedirect("/hss.api/docs")
 
@@ -167,21 +181,11 @@ class UserDetailView(APIView):
 		resp = {}
 		imsu = None
 		try:
-			imsu = Imsu.objects.prefetch_related('impis__impus').get(name=name)
+			imsu = Imsu.objects.prefetch_related('impis__impus__service_profile').get(name=name)
 		except:
 			raise NotFound('User[%s] not found.' % (name))
-
-		user_dic = model_to_dict(imsu)
-		user_dic['impi'] = []
-		for impi in imsu.impis.all():
-			impi_dic = model_to_dict(impi)
-			impi_dic['impu'] = []
-			for impu in impi.impus.all():
-				impu_dic = model_to_dict(impu)
-				impi_dic['impu'].append(impu_dic)
-			user_dic['impi'].append(impi_dic)
-			
-		resp['user'] = user_dic
+		
+		resp['user'] = get_user_dict(imsu)
 		return Response(resp)
 
 	def post(self, request, name):
