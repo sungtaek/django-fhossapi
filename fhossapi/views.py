@@ -181,7 +181,7 @@ class UserDetailView(APIView):
 			user_dic['impi'].append(impi_dic)
 			
 		resp['user'] = user_dic
-		return Response(user)
+		return Response(resp)
 
 	def post(self, request, name):
 		resp = {}
