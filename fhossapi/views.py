@@ -78,6 +78,12 @@ class UserSearchView(APIView):
 			  required: false
 			  type: string
 			  paramType: query
+			- name: regi
+			  description: register status
+			  required: false
+			  type: bool
+			  default: false
+			  paramType: query
 	"""
 	# permission_classes = (IsAuthenticated,)
 
@@ -91,8 +97,8 @@ class UserSearchView(APIView):
 			filters['impis__identity__icontains'] = request.GET['impi']
 		if request.GET.has_key('impu'):
 			filters['impis__impus__identity__icontains'] = request.GET['impu']
-		#if request.GET.has_key('regi') and request.GET['regi']:
-		#	filters['impis__impus__user_status'] = 1
+		if request.GET.has_key('regi') and request.GET['regi']:
+			filters['impis__impus__user_status'] = 1
 		
 		imsus = Imsu.objects.prefetch_related('impis__impus').filter(**filters)
 		users = []
