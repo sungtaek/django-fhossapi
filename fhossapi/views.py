@@ -81,8 +81,8 @@ class UserSearchView(APIView):
 			- name: regi
 			  description: register status
 			  required: false
-			  type: bool
-			  default: false
+			  type: boolean
+			  defaultValue: false
 			  paramType: query
 	"""
 	# permission_classes = (IsAuthenticated,)
