@@ -66,7 +66,7 @@ class Impi(models.Model):
         val['identity'] = self.identity
         val['secret_key'] = self.secret_key
         val['avail_auth'] = []
-        for auth in AUTH_CHOICE:
+        for auth in self.AUTH_CHOICE:
             if auth[0] ^ self.avail_auth:
                 val['avail_auth'].append(auth[1])
         val['def_auth'] = self.get_def_auth_display()
