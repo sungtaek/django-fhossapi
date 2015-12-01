@@ -66,7 +66,7 @@ class Impi(models.Model):
         val['identity'] = self.identity
         val['secret_key'] = self.secret_key
         val['avail_auth'] = self.avail_auth
-        val['def_auth'] = self.get_avail_auth_display()
+        val['def_auth'] = self.get_def_auth_display()
         val['amf'] = self.amf
         val['op'] = self.op
         val['sqn'] = self.sqn
