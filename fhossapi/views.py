@@ -17,6 +17,7 @@ from .models import *
 logger = logging.getLogger('fhossapi')
 
 
+'''
 def get_user_dict(imsu):
 	user_dic = model_to_dict(imsu)
 	user_dic['impi'] = []
@@ -29,6 +30,7 @@ def get_user_dict(imsu):
 			impi_dic['impu'].append(impu_dic)
 		user_dic['impi'].append(impi_dic)
 	return user_dic
+'''
 
 def index(request):
 	return HttpResponseRedirect("/hss.api/docs")
@@ -138,7 +140,6 @@ class UserSearchView(APIView):
 		imsus = Imsu.objects.prefetch_related('impis__impus__service_profile').filter(**filters).order_by('name')[offset:limit]
 		users = []
 		for imsu in imsus:
-			#users.append(get_user_dict(imsu))
 			users.append(imsu.dict())
 		resp['count'] = len(users)
 		resp['offset'] = offset
@@ -199,7 +200,7 @@ class UserDetailView(APIView):
 		except:
 			raise NotFound('User[%s] not found.' % (name))
 		
-		resp['user'] = get_user_dict(imsu)
+		resp['user'] = imsu.dict()
 		return Response(resp)
 
 	def post(self, request, name):
