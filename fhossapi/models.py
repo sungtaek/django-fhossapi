@@ -146,6 +146,7 @@ class Impu(models.Model):
         val['display_name'] = self.display_name
         val['psi_activation'] = self.psi_activation
         val['can_register'] = self.can_register
+        return val
 
     class Meta:
         db_table = 'impu'
