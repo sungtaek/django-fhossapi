@@ -10,6 +10,18 @@ class Imsu(models.Model):
     capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
     pref_scscf  = models.IntegerField(db_column='id_preferred_scscf_set', null=True, default=-1)
     
+    def dict(self):
+        val = {}
+        val['name'] = self.name
+        val['scscf_name'] = self.scscf_name
+        val['diameter_name'] = self.diameter_name
+        val['capa_set'] = self.capa_set
+        val['pref_scscf'] = self.pref_scscf
+        val['impi'] = []
+        for impi in self.impis.all():
+            val['impi'].append(impi.dict())
+        return val
+    
     class Meta:
         app_label = 'hss_app'
         db_table = 'imsu'
@@ -17,7 +29,7 @@ class Imsu(models.Model):
         
 class Impi(models.Model):
     DIGEST_AKAV1_MD5    = 1
-    DIGEST_AKAV2_MD5    = 2
+    DIGEST_AKAV2_MD    = 2
     DIGEST_MD5          = 4
     DIGEST              = 8
     HTTP_DIGEST_MD5     = 16
@@ -49,8 +61,26 @@ class Impi(models.Model):
     zh_uicc_type= models.IntegerField(db_column='zh_uicc_type', null=True, default=0)
     zh_key_life_time= models.IntegerField(db_column='zh_key_life_time', null=True, default=3600)
     zh_def_auth = models.IntegerField(db_column='zh_default_auth_scheme', choices=AUTH_CHOICE, default=SIP_DIGEST)
-    #impus       = models.ManyToManyField('Impu', through='ImpiImpu', editable=False)
-
+    
+    def dict(self):
+        val = {}
+        val['identity'] = self.identity
+        val['secret_key'] = self.secret_key
+        val['avail_auth'] = self.avail_auth
+        val['def_auth'] = self.get_avail_auth_display()
+        val['amf'] = self.amf
+        val['op'] = self.op
+        val['sqn'] = self.sqn
+        val['ealry_ims_ip'] = self.elary_ims_ip
+        val['dsl_line_id'] = self.dsl_line_id
+        val['zh_uicc_type'] = self.zh_uicc_type
+        val['zh_key_life_time'] = self.zh_key_life_time
+        val['zh_def_auth'] = self.get_zh_def_auth_display()
+        val['impu'] = []
+        for impu in self.impus.all():
+            val['impu'].append(impu.dict())
+        return val
+    
     class Meta:
         app_label = 'hss_app'
         db_table = 'impi'
@@ -102,8 +132,21 @@ class Impu(models.Model):
     psi_activation= models.BooleanField(db_column='psi_activation', default=False)
     can_register= models.BooleanField(db_column='can_register', default=True)
     impis       = models.ManyToManyField('Impi', through='ImpiImpu', related_name='impus', editable=False)
-    visited_networks = models.ManyToManyField('VisitedNetwork', through='ImpuVisitedNetwork', editable=False)
     
+    def dict(self):
+        val = {}
+        val['identity'] = self.identity
+        val['impu_type'] = self.get_impu_type_display()
+        val['barring'] = self.barring
+        val['user_status'] = self.get_user_status_display()
+        val['service_profile'] = self.service_profile.name
+        val['implicit_set'] = self.implicit_set
+        val['charging_info_set'] = self.charging_info_set
+        val['wildcard_psi'] = self.wildcard_psi
+        val['display_name'] = self.display_name
+        val['psi_activation'] = self.psi_activation
+        val['can_register'] = self.can_register
+
     class Meta:
         app_label = 'hss_app'
         db_table = 'impu'

@@ -138,7 +138,8 @@ class UserSearchView(APIView):
 		imsus = Imsu.objects.prefetch_related('impis__impus__service_profile').filter(**filters).order_by('name')[offset:limit]
 		users = []
 		for imsu in imsus:
-			users.append(get_user_dict(imsu))
+			#users.append(get_user_dict(imsu))
+			users.append(imsu.dict())
 		resp['count'] = len(users)
 		resp['offset'] = offset
 		resp['limit'] = limit
