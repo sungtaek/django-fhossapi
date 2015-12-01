@@ -10,6 +10,7 @@ class Imsu(models.Model):
     capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
     pref_scscf  = models.IntegerField(db_column='id_preferred_scscf_set', null=True, default=-1)
     
+    '''
     def dict(self):
         val = {}
         val['name'] = self.name
@@ -21,6 +22,7 @@ class Imsu(models.Model):
         for impi in self.impis.all():
             val['impi'].append(impi.dict())
         return val
+    '''
     
     class Meta:
         app_label = 'hss_app'
