@@ -55,7 +55,7 @@ class Impi(models.Model):
     amf         = models.BinaryField(db_column='amf', default='0000')
     op          = models.BinaryField(db_column='op', default='00000000000000000000000000000000')
     sqn         = models.CharField(db_column='sqn', max_length=64, default='000000000000')
-    ealry_ims_ip= models.CharField(db_column='ip', max_length=64, default='')
+    early_ims_ip= models.CharField(db_column='ip', max_length=64, default='')
     dsl_line_id = models.CharField(db_column='line_identifier', max_length=64, default='')
     zh_uicc_type= models.IntegerField(db_column='zh_uicc_type', null=True, default=0)
     zh_key_life_time= models.IntegerField(db_column='zh_key_life_time', null=True, default=3600)
@@ -70,7 +70,7 @@ class Impi(models.Model):
         val['amf'] = self.amf
         val['op'] = self.op
         val['sqn'] = self.sqn
-        val['ealry_ims_ip'] = self.elary_ims_ip
+        val['early_ims_ip'] = self.early_ims_ip
         val['dsl_line_id'] = self.dsl_line_id
         val['zh_uicc_type'] = self.zh_uicc_type
         val['zh_key_life_time'] = self.zh_key_life_time
