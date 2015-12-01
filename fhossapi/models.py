@@ -10,7 +10,6 @@ class Imsu(models.Model):
     capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
     pref_scscf  = models.IntegerField(db_column='id_preferred_scscf_set', null=True, default=-1)
     
-    '''
     def dict(self):
         val = {}
         val['name'] = self.name
@@ -22,7 +21,6 @@ class Imsu(models.Model):
         for impi in self.impis.all():
             val['impi'].append(impi.dict())
         return val
-    '''
     
     class Meta:
         db_table = 'imsu'
@@ -63,7 +61,6 @@ class Impi(models.Model):
     zh_key_life_time= models.IntegerField(db_column='zh_key_life_time', null=True, default=3600)
     zh_def_auth = models.IntegerField(db_column='zh_default_auth_scheme', choices=AUTH_CHOICE, default=SIP_DIGEST)
     
-    '''
     def dict(self):
         val = {}
         val['identity'] = self.identity
@@ -82,7 +79,6 @@ class Impi(models.Model):
         for impu in self.impus.all():
             val['impu'].append(impu.dict())
         return val
-    '''
     
     class Meta:
         db_table = 'impi'
@@ -134,7 +130,6 @@ class Impu(models.Model):
     can_register= models.BooleanField(db_column='can_register', default=True)
     impis       = models.ManyToManyField('Impi', through='ImpiImpu', related_name='impus', editable=False)
     
-    '''
     def dict(self):
         val = {}
         val['identity'] = self.identity
@@ -148,7 +143,6 @@ class Impu(models.Model):
         val['display_name'] = self.display_name
         val['psi_activation'] = self.psi_activation
         val['can_register'] = self.can_register
-    '''
 
     class Meta:
         db_table = 'impu'
