@@ -25,7 +25,6 @@ class Imsu(models.Model):
     '''
     
     class Meta:
-        app_label = 'hss_app'
         db_table = 'imsu'
         managed = False
         
@@ -86,7 +85,6 @@ class Impi(models.Model):
     '''
     
     class Meta:
-        app_label = 'hss_app'
         db_table = 'impi'
         managed = False
         
@@ -98,7 +96,6 @@ class ImpiImpu(models.Model):
     user_status = models.IntegerField(db_column='user_state', default=0)
     
     class Meta:
-        app_label = 'hss_app'
         db_table = 'impi_impu'
         managed = False
         
@@ -154,7 +151,6 @@ class Impu(models.Model):
     '''
 
     class Meta:
-        app_label = 'hss_app'
         db_table = 'impu'
         managed = False
         
@@ -164,7 +160,6 @@ class ServiceProfile(models.Model):
     cn_service_auth= models.IntegerField(db_column='cn_service_auth', null=True, default=0)
     
     class Meta:
-        app_label = 'hss_app'
         db_table = 'sp'
         managed = False
         
