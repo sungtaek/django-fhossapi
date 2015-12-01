@@ -29,7 +29,7 @@ class Imsu(models.Model):
         
 class Impi(models.Model):
     DIGEST_AKAV1_MD5    = 1
-    DIGEST_AKAV2_MD    = 2
+    DIGEST_AKAV2_MD5    = 2
     DIGEST_MD5          = 4
     DIGEST              = 8
     HTTP_DIGEST_MD5     = 16
