@@ -10,18 +10,19 @@ class Imsu(models.Model):
     capa_set    = models.ForeignKey('CapabilitiesSet', db_column='id_capabilities_set', to_field='id_set', null=True, editable=False)
     pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', null=True, editable=False)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['name'] = self.name
         val['scscf_name'] = self.scscf_name
         val['diameter_name'] = self.diameter_name
-        if self.capa_set:
-            val['capa_set'] = self.capa_set.name
-        if self.pref_scscf:
-            val['pref_scscf'] = self.pref_scscf.name
+        if detail:
+            if self.capa_set:
+                val['capa_set'] = self.capa_set.name
+            if self.pref_scscf:
+                val['pref_scscf'] = self.pref_scscf.name
         val['impi'] = []
         for impi in self.impis.all():
-            val['impi'].append(impi.dict())
+            val['impi'].append(impi.dict(detail))
         return val
     
     class Meta:
@@ -63,26 +64,28 @@ class Impi(models.Model):
     zh_key_life_time= models.IntegerField(db_column='zh_key_life_time', null=True, default=3600)
     zh_def_auth = models.IntegerField(db_column='zh_default_auth_scheme', choices=AUTH_CHOICE, default=SIP_DIGEST)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['identity'] = self.identity
-        val['secret_key'] = self.secret_key
+        if detail:
+            val['secret_key'] = self.secret_key
         val['avail_auth'] = []
         for auth in self.AUTH_CHOICE:
             if auth[0] & self.avail_auth:
                 val['avail_auth'].append(auth[1])
-        val['def_auth'] = self.get_def_auth_display()
-        val['amf'] = self.amf
-        val['op'] = self.op
-        val['sqn'] = self.sqn
-        val['early_ims_ip'] = self.early_ims_ip
-        val['dsl_line_id'] = self.dsl_line_id
-        val['zh_uicc_type'] = self.zh_uicc_type
-        val['zh_key_life_time'] = self.zh_key_life_time
-        val['zh_def_auth'] = self.get_zh_def_auth_display()
+        if detail:
+            val['def_auth'] = self.get_def_auth_display()
+            val['amf'] = self.amf
+            val['op'] = self.op
+            val['sqn'] = self.sqn
+            val['early_ims_ip'] = self.early_ims_ip
+            val['dsl_line_id'] = self.dsl_line_id
+            val['zh_uicc_type'] = self.zh_uicc_type
+            val['zh_key_life_time'] = self.zh_key_life_time
+            val['zh_def_auth'] = self.get_zh_def_auth_display()
         val['impu'] = []
         for impu in self.impus.all():
-            val['impu'].append(impu.dict())
+            val['impu'].append(impu.dict(detail))
         return val
     
     class Meta:
@@ -135,7 +138,7 @@ class Impu(models.Model):
     can_register= models.BooleanField(db_column='can_register', default=True)
     impis       = models.ManyToManyField('Impi', through='ImpiImpu', related_name='impus', editable=False)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['identity'] = self.identity
         val['impu_type'] = self.get_impu_type_display()
@@ -143,12 +146,13 @@ class Impu(models.Model):
         val['user_status'] = self.get_user_status_display()
         if self.service_profile:
             val['service_profile'] = self.service_profile.name
-        val['implicit_set'] = self.implicit_set
-        val['charging_info_set'] = self.charging_info_set
-        val['wildcard_psi'] = self.wildcard_psi
-        val['display_name'] = self.display_name
-        val['psi_activation'] = self.psi_activation
-        val['can_register'] = self.can_register
+        if detail:
+            val['implicit_set'] = self.implicit_set
+            val['charging_info_set'] = self.charging_info_set
+            val['wildcard_psi'] = self.wildcard_psi
+            val['display_name'] = self.display_name
+            val['psi_activation'] = self.psi_activation
+            val['can_register'] = self.can_register
         return val
 
     class Meta:
@@ -161,12 +165,12 @@ class ServiceProfile(models.Model):
     name        = models.CharField(db_column='name', max_length=255, unique=True)
     cn_service_auth= models.IntegerField(db_column='cn_service_auth', null=True, default=0)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['name'] = self.name
         val['ifc'] = []
         for ifc in self.ifcs.all():
-            val['ifc'].append(ifc.dict())
+            val['ifc'].append(ifc.dict(detail))
         return val
 
     class Meta:
@@ -200,12 +204,13 @@ class Ifc(models.Model):
     profile_part_indicator=models.IntegerField(db_column='profile_part_ind', choices=PROFILE_CHOICE, default=ANY)
     service_profiles = models.ManyToManyField('ServiceProfile', through='ServiceProfileIfc', related_name='ifcs', editable=False)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['name'] = self.name
-        val['application_server'] = self.application_server.dict()
-        val['trigger_point'] = self.trigger_point.dict()
-        val['profile_part_indicator'] = self.get_profile_part_indicator_display()
+        val['application_server'] = self.application_server.dict(detail)
+        val['trigger_point'] = self.trigger_point.dict(detail)
+        if detail:
+            val['profile_part_indicator'] = self.get_profile_part_indicator_display()
         return val
 
     class Meta:
@@ -233,19 +238,20 @@ class ApplicationServer(models.Model):
     include_regi_response=models.BooleanField(db_column='include_register_response', default=False)
     include_regi_request=models.BooleanField(db_column='include_register_request', default=False)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['name'] = self.name
         val['server_name'] = self.server_name
-        val['default_handling'] = self.get_default_handling_display()
-        val['service_info'] = self.service_info
-        val['diameter_fqdn'] = self.diameter_fqdn
-        val['rep_data_limit'] = self.rep_data_limit
-        val['udr_allow'] = self.udr_allow
-        val['pur_allow'] = self.pur_allow
-        val['snr_allow'] = self.snr_allow
-        val['include_regi_response'] = self.include_regi_response
-        val['include_regi_request'] = self.include_regi_request
+        if detail:
+            val['default_handling'] = self.get_default_handling_display()
+            val['service_info'] = self.service_info
+            val['diameter_fqdn'] = self.diameter_fqdn
+            val['rep_data_limit'] = self.rep_data_limit
+            val['udr_allow'] = self.udr_allow
+            val['pur_allow'] = self.pur_allow
+            val['snr_allow'] = self.snr_allow
+            val['include_regi_response'] = self.include_regi_response
+            val['include_regi_request'] = self.include_regi_request
         return val
     
     class Meta:
@@ -264,13 +270,13 @@ class TriggerPoint(models.Model):
     name        = models.CharField(db_column='name', max_length=255, unique=True)
     condition_type = models.IntegerField(db_column='condition_type_cnf', choices=CONDITION_TYPE_CHOICE, default=CONDITION_TYPE_DNF)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['name'] = self.name
         val['condition_type'] = self.get_condition_type_display()
         val['spt'] = []
         for spt in self.spts.all():
-            val['spt'].append(spt.dict())
+            val['spt'].append(spt.dict(detail))
         return val
     
     class Meta:
@@ -348,26 +354,27 @@ class Spt(models.Model):
     sdp_content = models.CharField(db_column='sdp_line_content', max_length=255, null=True)
     regi_type   = models.IntegerField(db_column='registration_type', null=True, default=0)
     
-    def dict(self):
+    def dict(self, detail=False):
         val = {}
         val['condition_nagated'] = self.condition_nagated
         val['group'] = self.group
         val['type'] = self.get_type_display()
-        if self.type == self.TYPE_REQUEST_URI:
-            val['value'] = self.requesturi
-        elif self.type == self.TYPE_METHOD:
-            val['value'] = self.method
-            if self.method == self.METHOD_REGISTER:
-                val['active'] = []
-                for active in self.ACTIVE_CHOICE:
-                    if active[0] & self.regi_type:
-                        val['active'].append(active[1])
-        elif self.type == self.TYPE_SIP_HEADER:
-            val['value'] = {'header': self.header, 'content': self.header_content}
-        elif self.type == self.TYPE_SESSION_CASE:
-            val['value'] = self.get_session_case_display()
-        elif self.type == self.TYPE_SDP_LINE:
-            val['value'] = {'line': self.sdp_line, 'content': self.sdp_content}
+        if detail:
+            if self.type == self.TYPE_REQUEST_URI:
+                val['value'] = self.requesturi
+            elif self.type == self.TYPE_METHOD:
+                val['value'] = self.method
+                if self.method == self.METHOD_REGISTER:
+                    val['active'] = []
+                    for active in self.ACTIVE_CHOICE:
+                        if active[0] & self.regi_type:
+                            val['active'].append(active[1])
+            elif self.type == self.TYPE_SIP_HEADER:
+                val['value'] = {'header': self.header, 'content': self.header_content}
+            elif self.type == self.TYPE_SESSION_CASE:
+                val['value'] = self.get_session_case_display()
+            elif self.type == self.TYPE_SDP_LINE:
+                val['value'] = {'line': self.sdp_line, 'content': self.sdp_content}
         return val
     
     class Meta:

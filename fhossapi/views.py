@@ -100,6 +100,12 @@ class UserSearchView(APIView):
 			  type: boolean
 			  default: false
 			  paramType: query
+			- name: detail
+			  description: display detail info
+			  required: false
+			  type: boolean
+			  default: false
+			  paramType: query
 			- name: offset
 			  description: query offset (default:0)
 			  required: false
@@ -119,6 +125,7 @@ class UserSearchView(APIView):
 		resp = {}
 		
 		filters = {}
+		detail = False
 		offset = 0
 		limit = 10
 		if request.GET.has_key('name'):
@@ -129,6 +136,8 @@ class UserSearchView(APIView):
 			filters['impis__impus__identity__icontains'] = request.GET['impu']
 		if request.GET.has_key('regi') and request.GET['regi']:
 			filters['impis__impus__user_status'] = 1
+		if request.GET.has_key('detail') and request.GET['detail']:
+			detail = True
 		if request.GET.has_key('offset') and int(request.GET['offset']) > 0:
 			offset = int(request.GET['offset'])
 		if request.GET.has_key('limit') and int(request.GET['limit']) > 0:
@@ -144,7 +153,7 @@ class UserSearchView(APIView):
 		imsus = qs.filter(**filters).order_by('name')[offset:limit]
 		users = []
 		for imsu in imsus:
-			users.append(imsu.dict())
+			users.append(imsu.dict(detail))
 		resp['count'] = len(users)
 		resp['offset'] = offset
 		resp['limit'] = limit
@@ -239,6 +248,12 @@ class ServiceSearchView(APIView):
 			  required: false
 			  type: string
 			  paramType: query
+			- name: detail
+			  description: display detail info
+			  required: false
+			  type: boolean
+			  default: false
+			  paramType: query
 			- name: offset
 			  description: query offset (default:0)
 			  required: false
@@ -258,12 +273,15 @@ class ServiceSearchView(APIView):
 		resp = {}
 		
 		filters = {}
+		detail = False
 		offset = 0
 		limit = 10
 		if request.GET.has_key('name'):
 			filters['name__icontains'] = request.GET['name']
 		if request.GET.has_key('as'):
 			filters['ifcs__application_server__name__icontains'] = request.GET['as']
+		if request.GET.has_key('detail') and request.GET['detail']:
+			detail = True
 		if request.GET.has_key('offset') and int(request.GET['offset']) > 0:
 			offset = int(request.GET['offset'])
 		if request.GET.has_key('limit') and int(request.GET['limit']) > 0:
@@ -278,7 +296,7 @@ class ServiceSearchView(APIView):
 		sps = qs.filter(**filters).order_by('name')[offset:limit]
 		services = []
 		for sp in sps:
-			services.append(sp.dict())
+			services.append(sp.dict(detail))
 		resp['count'] = len(services)
 		resp['offset'] = offset
 		resp['limit'] = limit
