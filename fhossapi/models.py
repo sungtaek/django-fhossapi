@@ -158,13 +158,217 @@ class Impu(models.Model):
     
 class ServiceProfile(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
-    name        = models.CharField(db_column='name', max_length=16, unique=True)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
     cn_service_auth= models.IntegerField(db_column='cn_service_auth', null=True, default=0)
     
+    def dict(self):
+        val = {}
+        val['name'] = self.name
+        val['ifc'] = []
+        for ifc in self.ipcs.all():
+            val['ifc'].append(ifc.dict())
+        return val
+
     class Meta:
         db_table = 'sp'
         managed = False
+
+class ServiceProfileIfc(models.Model):
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    id_sp       = models.ForeignKey('ServiceProfile', db_column='id_sp', editable=False)
+    id_ifc      = models.ForeignKey('Ifc', db_column='id_ifc', editable=False)
+    priority    = models.IntegerField(db_column='priority', default=0)
+    
+    class Meta:
+        db_table = 'sp_ifc'
+        managed = False
+    
+class Ifc(models.Model):
+    ANY         = -1
+    REGISTERED  = 0
+    UNREGISTERED= 1
+    PROFILE_CHOICE = (
+        (ANY, 'Any'),
+        (REGISTERED, 'Registered'),
+        (UNREGISTERED, 'Unregistered'),
+    )
+
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    application_server=models.ForeignKey('ApplicationServer', db_column='id_application_server', editable=False)
+    trigger_point=models.ForeignKey('TriggerPoint', db_column='id_tp', editable=False)
+    profile_part_indicator=models.IntegerField(db_column='profile_part_ind', choices=PROFILE_CHOICE, default=ANY)
+    service_profiles = models.ManyToManyField('ServiceProfile', through='ServiceProfileIfc', related_name='ifcs', editable=False)
+    
+    def dict(self):
+        val = {}
+        val['name'] = self.name
+        val['application_server'] = self.application_server.dict()
+        val['trigger_point'] = self.trigger_point.dict()
+        val['profile_part_indicator'] = self.get_profile_part_indicator_display()
+        return val
+
+    class Meta:
+        db_table = 'ifc'
+        managed = False
         
+class ApplicationServer(models.Model):
+    SESSION_CONTINUE    = 0
+    SESSION_TERMINATED  = 1
+    DEFAULT_HANDLING_CHOICE = (
+        (SESSION_CONTINUE, 'Session Continue'),
+        (SESSION_TERMINATED, 'Session Terminated'),
+    )
+
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    server_name = models.CharField(db_column='server_name', max_length=255, unique=True)
+    default_handling= models.IntegerField(db_column='default_handling', choices=DEFAULT_HANDLING_CHOICE, default=SESSION_CONTINUE)
+    service_info= models.CharField(db_column='service_info', max_length=255, default='')
+    diameter_fqdn= models.CharField(db_column='diameter_address', max_length=255, unique=True)
+    rep_data_limit= models.IntegerField(db_column='rep_data_size_limit', default=1024)
+    udr_allow   = models.BooleanField(db_column='udr', default=True)
+    pur_allow   = models.BooleanField(db_column='pur', default=True)
+    snr_allow   = models.BooleanField(db_column='snr', default=True)
+    include_regi_response=models.BooleanField(db_column='include_register_response', default=False)
+    include_regi_request=models.BooleanField(db_column='include_register_request', default=False)
+    
+    def dict(self):
+        val = {}
+        val['name'] = self.name
+        val['server_name'] = self.server_name
+        val['default_handling'] = self.get_default_handling_display()
+        val['service_info'] = self.service_info
+        val['diameter_fqdn'] = self.diameter_fqdn
+        val['rep_data_limit'] = self.rep_data_limit
+        val['udr_allow'] = self.udr_allow
+        val['pur_allow'] = self.pur_allow
+        val['snr_allow'] = self.snr_allow
+        val['include_regi_response'] = self.include_regi_response
+        val['include_regi_request'] = self.include_regi_request
+        return val
+    
+    class Meta:
+        db_table = 'application_server'
+        managed = False
+        
+class TriggerPoint(models.Model):
+    CONDITION_TYPE_DNF  = 0
+    CONDITION_TYPE_CNF  = 1
+    CONDITION_TYPE_CHOICE = (
+        (CONDITION_TYPE_DNF, 'Disjunctive Normal Format'),
+        (CONDITION_TYPE_CNF, 'Conjunctive Normal Format'),
+    )
+
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    condition_type = models.IntegerField(db_column='condition_type_cnf', choices=CONDITION_TYPE_CHOICE, default=CONDITION_TYPE_DNF)
+    
+    def dict(self):
+        val = {}
+        val['name'] = self.name
+        val['condition_type'] = self.get_condition_type_display()
+        val['spt'] = []
+        for spt in self.spts.all():
+            val['spt'].append(spt.dict())
+        return val
+    
+    class Meta:
+        db_table = 'tp'
+        managed = False
+        
+class Spt(models.Model):
+    TYPE_REQUEST_URI    = 0
+    TYPE_METHOD         = 1
+    TYPE_SIP_HEADER     = 2
+    TYPE_SESSION_CASE   = 3
+    TYPE_SDP_LINE       = 4
+    TYPE_CHOICE = (
+        (TYPE_REQUEST_URI, 'Request-URI'),
+        (TYPE_METHOD, 'SIP Method'),
+        (TYPE_SIP_HEADER, 'SIP Header'),
+        (TYPE_SESSION_CASE, 'Session Case'),
+        (TYPE_SDP_LINE, 'Session Description'),
+    )
+    
+    METHOD_INVITE       = 'INVITE'
+    METHOD_REGISTER     = 'REGISTER'
+    METHOD_CANCEL       = 'CANCEL'
+    METHOD_OPTION       = 'OPTION'
+    METHOD_PUBLISH      = 'PUBLISH'
+    METHOD_SUBSCRIBE    = 'SUBSCRIBE'
+    METHOD_MESSAGE      = 'MESSAGE'
+    METHOD_INFO         = 'INFO'
+    METHOD_REFER        = 'REFER'
+    METHOD_CHOICE = (
+        (METHOD_INVITE, 'INVITE'),
+        (METHOD_REGISTER, 'REGISTER'),
+        (METHOD_CANCEL, 'CANCEL'),
+        (METHOD_OPTION, 'OPTION'),
+        (METHOD_PUBLISH, 'PUBLISH'),
+        (METHOD_SUBSCRIBE, 'SUBSCRIBE'),
+        (METHOD_MESSAGE, 'MESSAGE'),
+        (METHOD_INFO, 'INFO'),
+        (METHOD_REFER, 'REFER'),
+    )
+
+    SESSION_CASE_ORIGIN     = 0
+    SESSION_CASE_TERM_REG   = 1
+    SESSION_CASE_TERM_UNREG = 2
+    SESSION_CASE_ORIGIN_UNREG= 3
+    SESSION_CASE_ORIGIN_CDIV= 4
+    SESSION_CASE_CHOICE = (
+        (SESSION_CASE_ORIGIN, 'Origin-Session'),
+        (SESSION_CASE_TERM_REG, 'Term-Reg'),
+        (SESSION_CASE_TERM_UNREG, 'Term-UnReg'),
+        (SESSION_CASE_ORIGIN_UNREG, 'Origin-UnReg'),
+        (SESSION_CASE_ORIGIN_CDIV, 'Origin-Cdiv'),
+    )
+    
+    ACTIVE_REG      = 1
+    ACTIVE_REREG    = 2
+    ACTIVE_DEREG    = 4
+    ACTIVE_CHOICE = (
+        (ACTIVE_REG, 'Reg'),
+        (ACTIVE_REREG, 'ReReg'),
+        (ACTIVE_DEREG, 'DeReg'),
+    )
+
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    trigger_point= models.ForeignField('TriggerPoint', db_column='id_tp', related_name='spts', editable=False)
+    condition_nagated=models.BooleanField(db_column='condition_negated', default=False)
+    group       = models.IntegerField(db_column='grp', default=0)
+    type        = models.IntegerField(db_column='type', choices=TYPE_CHOICE, default=TYPE_REQUEST_URI)
+    requesturi  = models.CharField(db_column='requesturi', max_length=255, null=True)
+    method      = models.CharField(db_column='method', max_length=255, choices=METHOD_CHOICE, default=METHOD_INVITE, null=True)
+    header      = models.CharField(db_column='header', max_length=255, null=True)
+    header_content= models.CharField(db_column='header_content', max_length=255, null=True)
+    session_case= models.IntegerField(db_column='session_case', null=True, choices=SESSION_CASE_ORIGIN, default=SESSION_CASE_ORIGIN)
+    sdp_line    = models.CharField(db_column='sdp_line', max_length=255, null=True)
+    sdp_content = models.CharField(db_column='sdp_line_content', max_length=255, null=True)
+    regi_type   = models.IntegerField(db_column='registration_type', null=True, default=0)
+    
+    def dict(self):
+        val = {}
+        val['condition_nagated'] = self.condition_nagated
+        val['group'] = self.group
+        val['type'] = self.get_type_display()
+        if self.type == self.TYPE_REQUEST_URI:
+            val['value'] = self.requesturi
+        elif self.type == self.TYPE_METHOD:
+            val['value'] = self.method
+            if self.method == self.METHOD_REGISTER:
+                val['active'] = []
+                for active in self.ACTIVE_CHOICE:
+                    if active[0] & self.regi_type:
+                        val['active'].append(active[1])
+        elif self.type == self.TYPE_SIP_HEADER:
+            val['value'] = {'header': self.header, 'content': self.header_content}
+        elif self.type == self.TYPE_SESSION_CASE:
+            val['value'] = self.get_session_case_display()
+        elif self.type == self.TYPE_SDP_LINE:
+            val['value'] = {'line': self.sdp_line, 'content': self.sdp_content}
+        return val
 
 class CapabilitiesSet(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
