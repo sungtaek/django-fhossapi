@@ -165,7 +165,7 @@ class ServiceProfile(models.Model):
         val = {}
         val['name'] = self.name
         val['ifc'] = []
-        for ifc in self.ipcs.all():
+        for ifc in self.ifcs.all():
             val['ifc'].append(ifc.dict())
         return val
 
