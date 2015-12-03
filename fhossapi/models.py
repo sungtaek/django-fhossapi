@@ -335,7 +335,7 @@ class Spt(models.Model):
     )
 
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
-    trigger_point= models.ForeignField('TriggerPoint', db_column='id_tp', related_name='spts', editable=False)
+    trigger_point= models.ForeignKey('TriggerPoint', db_column='id_tp', related_name='spts', editable=False)
     condition_nagated=models.BooleanField(db_column='condition_negated', default=False)
     group       = models.IntegerField(db_column='grp', default=0)
     type        = models.IntegerField(db_column='type', choices=TYPE_CHOICE, default=TYPE_REQUEST_URI)
