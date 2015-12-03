@@ -343,7 +343,7 @@ class Spt(models.Model):
     method      = models.CharField(db_column='method', max_length=255, choices=METHOD_CHOICE, default=METHOD_INVITE, null=True)
     header      = models.CharField(db_column='header', max_length=255, null=True)
     header_content= models.CharField(db_column='header_content', max_length=255, null=True)
-    session_case= models.IntegerField(db_column='session_case', null=True, choices=SESSION_CASE_ORIGIN, default=SESSION_CASE_ORIGIN)
+    session_case= models.IntegerField(db_column='session_case', null=True, choices=SESSION_CASE_CHOICE, default=SESSION_CASE_ORIGIN)
     sdp_line    = models.CharField(db_column='sdp_line', max_length=255, null=True)
     sdp_content = models.CharField(db_column='sdp_line_content', max_length=255, null=True)
     regi_type   = models.IntegerField(db_column='registration_type', null=True, default=0)
