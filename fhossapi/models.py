@@ -125,7 +125,7 @@ class Impu(models.Model):
     impu_type   = models.IntegerField(db_column='type', choices=IMPU_TYPE_CHOICE, default=PUBLIC_USER_IDENTITY)
     barring     = models.BooleanField(db_column='barring', default=False)
     user_status = models.IntegerField(db_column='user_state', choices=USER_STATUS_CHOICE, default=NOT_REGISTERED)
-    service_profile=models.ForeignKey('ServiceProfile', db_column='id_sp', related_name='impus', editable=False)
+    service_profile=models.ForeignKey('ServiceProfile', db_column='id_sp', related_name='impus', null=True, editable=False)
     implicit_set = models.IntegerField(db_column='id_implicit_set', default=-1)
     charging_info_set=models.IntegerField(db_column='id_charging_info', null=True, default=-1)
     wildcard_psi= models.CharField(db_column='wildcard_psi', max_length=255, default='')
@@ -140,7 +140,8 @@ class Impu(models.Model):
         val['impu_type'] = self.get_impu_type_display()
         val['barring'] = self.barring
         val['user_status'] = self.get_user_status_display()
-        val['service_profile'] = self.service_profile.name
+        if self.service_profile:
+            val['service_profile'] = self.service_profile.name
         val['implicit_set'] = self.implicit_set
         val['charging_info_set'] = self.charging_info_set
         val['wildcard_psi'] = self.wildcard_psi
