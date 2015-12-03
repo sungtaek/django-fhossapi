@@ -8,7 +8,7 @@ class Imsu(models.Model):
     scscf_name  = models.CharField(db_column='scscf_name', max_length=255, null=True, blank=True)
     diameter_name = models.CharField(db_column='diameter_name', max_length=255, null=True, default='', blank=True)
     capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
-    pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', related_name='imsus', editable=False)
+    pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', related_name='imsus', null=True, editable=False)
     
     def dict(self):
         val = {}
