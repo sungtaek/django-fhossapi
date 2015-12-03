@@ -369,6 +369,10 @@ class Spt(models.Model):
         elif self.type == self.TYPE_SDP_LINE:
             val['value'] = {'line': self.sdp_line, 'content': self.sdp_content}
         return val
+    
+    class Meta:
+        db_table = 'spt'
+        managed = False
 
 class CapabilitiesSet(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
