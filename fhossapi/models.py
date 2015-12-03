@@ -8,7 +8,7 @@ class Imsu(models.Model):
     scscf_name  = models.CharField(db_column='scscf_name', max_length=255, null=True, blank=True)
     diameter_name = models.CharField(db_column='diameter_name', max_length=255, null=True, default='', blank=True)
     capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
-    pref_scscf  = models.IntegerField(db_column='id_preferred_scscf_set', null=True, default=-1)
+    pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', related_name='imsus', editable=False)
     
     def dict(self):
         val = {}
@@ -16,7 +16,7 @@ class Imsu(models.Model):
         val['scscf_name'] = self.scscf_name
         val['diameter_name'] = self.diameter_name
         val['capa_set'] = self.capa_set
-        val['pref_scscf'] = self.pref_scscf
+        val['pref_scscf'] = self.pref_scscf.name
         val['impi'] = []
         for impi in self.impis.all():
             val['impi'].append(impi.dict())
@@ -152,6 +152,7 @@ class Impu(models.Model):
         db_table = 'impu'
         managed = False
         
+    
 class ServiceProfile(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
     name        = models.CharField(db_column='name', max_length=16, unique=True)
@@ -162,3 +163,16 @@ class ServiceProfile(models.Model):
         managed = False
         
 
+
+class PreferredScscfSet(models.Model):
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    id_set      = models.IntegerField(db_column='id_set', unique=True)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    scscf_name  = models.CharField(db_column='scscf_name', max_length=255)
+    priority    = models.IntegerField(db_column='priority', unique=True)
+    
+    class Meta:
+        db_table = 'preferred_scscf_set'
+        managed = False
+        
+        
