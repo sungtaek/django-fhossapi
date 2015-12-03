@@ -200,7 +200,11 @@ class UserDetailView(APIView):
 		resp = {}
 		imsu = None
 		try:
-			imsu = Imsu.objects.prefetch_related('impis__impus__service_profile').get(name=name)
+			qs = Imsu.objects
+			qs = qs.select_related('capa_set')
+			qs = qs.select_related('pref_scscf')
+			qs = qs.prefetch_related('impis__impus__service_profile')
+			imsu = qs.get(name=name)
 		except:
 			raise NotFound('User[%s] not found.' % (name))
 		
