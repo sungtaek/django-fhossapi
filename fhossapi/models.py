@@ -7,15 +7,16 @@ class Imsu(models.Model):
     name        = models.CharField(db_column='name', max_length=255, unique=True)
     scscf_name  = models.CharField(db_column='scscf_name', max_length=255, null=True, blank=True)
     diameter_name = models.CharField(db_column='diameter_name', max_length=255, null=True, default='', blank=True)
-    capa_set    = models.IntegerField(db_column='id_capabilities_set', null=True, default=-1)
-    pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', related_name='imsus', null=True, editable=False)
+    capa_set    = models.ForeignKey('CapabilitiesSet', db_column='id_capabilities_set', to_field='id_set', null=True, editable=False)
+    pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', null=True, editable=False)
     
     def dict(self):
         val = {}
         val['name'] = self.name
         val['scscf_name'] = self.scscf_name
         val['diameter_name'] = self.diameter_name
-        val['capa_set'] = self.capa_set
+        if self.capa_set:
+            val['capa_set'] = self.capa_set.name
         if self.pref_scscf:
             val['pref_scscf'] = self.pref_scscf.name
         val['impi'] = []
@@ -165,6 +166,16 @@ class ServiceProfile(models.Model):
         managed = False
         
 
+class CapabilitiesSet(models.Model):
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    id_set      = models.IntegerField(db_column='id_set', unique=True)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    id_capability= models.IntegerField(db_column='id_capability', unique=True)
+    is_mandatory= models.BooleanField(db_column='is_mandatory', default=False)
+    
+    class Meta:
+        db_table = 'capabilities_set'
+        managed = False
 
 class PreferredScscfSet(models.Model):
     id          = models.IntegerField(db_column='id', primary_key=True, editable=False)

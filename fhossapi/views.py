@@ -137,7 +137,11 @@ class UserSearchView(APIView):
 			else:
 				limit = int(request.GET['limit'])
 		
-		imsus = Imsu.objects.select_related('pref_scscf').prefetch_related('impis__impus__service_profile').filter(**filters).order_by('name')[offset:limit]
+		qs = Imsu.objects
+		qs = qs.select_related('capa_set')
+		qs = qs.select_related('pref_scscf')
+		qs = qs.prefetch_related('impis__impus__service_profile')
+		imsus = qs.filter(**filters).order_by('name')[offset:limit]
 		users = []
 		for imsu in imsus:
 			users.append(imsu.dict())
