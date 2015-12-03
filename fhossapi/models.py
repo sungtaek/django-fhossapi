@@ -16,7 +16,8 @@ class Imsu(models.Model):
         val['scscf_name'] = self.scscf_name
         val['diameter_name'] = self.diameter_name
         val['capa_set'] = self.capa_set
-        val['pref_scscf'] = self.pref_scscf.name
+        if self.pref_scscf:
+            val['pref_scscf'] = self.pref_scscf.name
         val['impi'] = []
         for impi in self.impis.all():
             val['impi'].append(impi.dict())
