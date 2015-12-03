@@ -306,6 +306,16 @@ class ServiceDetailView(APIView):
 
 	def get(self, request, name):
 		resp = {}
+		sp = None
+		try:
+			qs = ServiceProfile.objects
+			qs = qs.prefetch_related('ifcs__application_server')
+			qs = qs.prefetch_related('ifcs__trigger_point__spts')
+			sp = qs.get(name=name)
+		except:
+			raise NotFound('Service[%s] not found.' % (name))
+		
+		resp['service'] = sp.dict()
 		return Response(resp)
 
 	def post(self, request, name):
