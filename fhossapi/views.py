@@ -256,6 +256,33 @@ class ServiceSearchView(APIView):
 
 	def get(self, request):
 		resp = {}
+		
+		filters = {}
+		offset = 0
+		limit = 10
+		if request.GET.has_key('name'):
+			filters['name__icontains'] = request.GET['name']
+		if request.GET.has_key('as'):
+			filters['ifcs__application_server__name__icontains'] = request.GET['as']
+		if request.GET.has_key('offset') and int(request.GET['offset']) > 0:
+			offset = int(request.GET['offset'])
+		if request.GET.has_key('limit') and int(request.GET['limit']) > 0:
+			if int(request.GET['limit']) > 30:
+				limit = 30
+			else:
+				limit = int(request.GET['limit'])
+				
+		qs = ServiceProfile.objects
+		qs = qs.prefetch_related('ifcs__application_server')
+		qs = qs.prefetch_related('ifcs__trigger_point__spts')
+		sps = qs.filter(**filters).order_by('name')[offset:limit]
+		services = []
+		for sp in sps:
+			services.append(sp.dict())
+		resp['count'] = len(services)
+		resp['offset'] = offset
+		resp['limit'] = limit
+		resp['service'] = services
 		return Response(resp)
 
 
