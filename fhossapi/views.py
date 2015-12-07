@@ -136,7 +136,7 @@ class UserSearchView(APIView):
 			filters['impis__impus__identity__icontains'] = request.GET['impu']
 		if request.GET.has_key('regi') and request.GET['regi']:
 			filters['impis__impus__user_status'] = 1
-		if request.GET.has_key('detail') and request.GET['detail']:
+		if request.GET.has_key('detail') and request.GET['detail'] == 'true':
 			detail = True
 		if request.GET.has_key('offset') and int(request.GET['offset']) > 0:
 			offset = int(request.GET['offset'])
@@ -146,6 +146,11 @@ class UserSearchView(APIView):
 			else:
 				limit = int(request.GET['limit'])
 		
+
+		logger.debug('filter -> %s' % (json.dumps(filters)))
+		logger.debug('detail -> %s' % (detail))
+		logger.debug('offset -> %d' % (offset))
+		logger.debug('limit -> %d' % (limit))
 		qs = Imsu.objects
 		qs = qs.select_related('capa_set')
 		qs = qs.select_related('pref_scscf')
@@ -280,7 +285,7 @@ class ServiceSearchView(APIView):
 			filters['name__icontains'] = request.GET['name']
 		if request.GET.has_key('as'):
 			filters['ifcs__application_server__name__icontains'] = request.GET['as']
-		if request.GET.has_key('detail') and request.GET['detail']:
+		if request.GET.has_key('detail') and request.GET['detail'] == 'true':
 			detail = True
 		if request.GET.has_key('offset') and int(request.GET['offset']) > 0:
 			offset = int(request.GET['offset'])
@@ -290,6 +295,10 @@ class ServiceSearchView(APIView):
 			else:
 				limit = int(request.GET['limit'])
 				
+		logger.debug('filter -> %s' % (json.dumps(filters)))
+		logger.debug('detail -> %s' % (detail))
+		logger.debug('offset -> %d' % (offset))
+		logger.debug('limit -> %d' % (limit))
 		qs = ServiceProfile.objects
 		qs = qs.prefetch_related('ifcs__application_server')
 		qs = qs.prefetch_related('ifcs__trigger_point__spts')

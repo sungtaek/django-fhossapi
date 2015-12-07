@@ -274,9 +274,10 @@ class TriggerPoint(models.Model):
         val = {}
         val['name'] = self.name
         val['condition_type'] = self.get_condition_type_display()
-        val['spt'] = []
-        for spt in self.spts.all():
-            val['spt'].append(spt.dict(detail))
+        if detail:
+            val['spt'] = []
+            for spt in self.spts.all():
+                val['spt'].append(spt.dict(detail))
         return val
     
     class Meta:
@@ -356,10 +357,10 @@ class Spt(models.Model):
     
     def dict(self, detail=False):
         val = {}
-        val['condition_nagated'] = self.condition_nagated
-        val['group'] = self.group
-        val['type'] = self.get_type_display()
         if detail:
+            val['condition_nagated'] = self.condition_nagated
+            val['group'] = self.group
+            val['type'] = self.get_type_display()
             if self.type == self.TYPE_REQUEST_URI:
                 val['value'] = self.requesturi
             elif self.type == self.TYPE_METHOD:

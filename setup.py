@@ -12,7 +12,7 @@ setup(
     version='0.1',
     packages=['fhossapi'],
     include_package_data=True,
-    install_requires=['Django==1.8.7','djangorestframework==3.3.1','MySQL-python==1.2.5'],
+    install_requires=['Django==1.8.7','djangorestframework==3.3.1','MySQL-python>=1.2.4'],
     license='Apache License',  # example license
     description='A simple Django app to control FHoSS.',
     long_description=README,
