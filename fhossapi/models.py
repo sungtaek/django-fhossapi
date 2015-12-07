@@ -18,7 +18,7 @@ class Imsu(models.Model):
         if detail:
             if self.capa_set:
                 val['capa_set'] = self.capa_set.name
-            if self.pref_scscf:
+            if self.pref_scscf_set:
                 val['pref_scscf_set'] = self.pref_scscf_set.name
         val['impi'] = []
         for impi in self.impis.all():

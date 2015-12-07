@@ -166,8 +166,9 @@ class UserSearchView(APIView):
 		logger.debug('limit -> %d' % (limit))
 		qs = Imsu.objects
 		qs = qs.select_related('capa_set')
-		qs = qs.select_related('pref_scscf')
+		qs = qs.select_related('pref_scscf_set')
 		qs = qs.prefetch_related('impis__impus__service_profile')
+		qs = qs.prefetch_related('impis__impus__charging_set')
 		imsus = qs.filter(**filters).order_by('name')[offset:limit]
 		users = []
 		for imsu in imsus:
@@ -229,8 +230,9 @@ class UserDetailView(APIView):
 		try:
 			qs = Imsu.objects
 			qs = qs.select_related('capa_set')
-			qs = qs.select_related('pref_scscf')
+			qs = qs.select_related('pref_scscf_set')
 			qs = qs.prefetch_related('impis__impus__service_profile')
+			qs = qs.prefetch_related('impis__impus__charging_set')
 			imsu = qs.get(name=name)
 		except:
 			raise NotFound('User[%s] not found.' % (name))
