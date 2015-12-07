@@ -147,7 +147,7 @@ class UserSearchView(APIView):
 			filters['impis__identity__icontains'] = request.GET['impi']
 		if request.GET.has_key('impu'):
 			filters['impis__impus__identity__icontains'] = request.GET['impu']
-		if request.GET.has_key('regi') and request.GET['regi']:
+		if request.GET.has_key('regi') and request.GET['regi'] == 'true':
 			filters['impis__impus__user_status'] = 1
 		if request.GET.has_key('detail') and request.GET['detail'] == 'true':
 			detail = True
@@ -169,7 +169,7 @@ class UserSearchView(APIView):
 		qs = qs.select_related('pref_scscf_set')
 		qs = qs.prefetch_related('impis__impus__service_profile')
 		qs = qs.prefetch_related('impis__impus__charging_set')
-		imsus = qs.filter(**filters).order_by('name')[offset:limit]
+		imsus = qs.filter(**filters).order_by('name')[offset:offset+limit]
 		users = []
 		for imsu in imsus:
 			users.append(imsu.dict(detail))
@@ -317,7 +317,7 @@ class ServiceSearchView(APIView):
 		qs = ServiceProfile.objects
 		qs = qs.prefetch_related('ifcs__application_server')
 		qs = qs.prefetch_related('ifcs__trigger_point__spts')
-		sps = qs.filter(**filters).order_by('name')[offset:limit]
+		sps = qs.filter(**filters).order_by('name')[offset:offset+limit]
 		services = []
 		for sp in sps:
 			services.append(sp.dict(detail))

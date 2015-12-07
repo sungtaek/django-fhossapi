@@ -13,9 +13,9 @@ class Imsu(models.Model):
     def dict(self, detail=False):
         val = {}
         val['name'] = self.name
-        val['scscf_name'] = self.scscf_name
-        val['diameter_name'] = self.diameter_name
         if detail:
+            val['scscf_name'] = self.scscf_name
+            val['diameter_name'] = self.diameter_name
             if self.capa_set:
                 val['capa_set'] = self.capa_set.name
             if self.pref_scscf_set:
@@ -69,12 +69,12 @@ class Impi(models.Model):
         val['identity'] = self.identity
         if detail:
             val['secret_key'] = self.secret_key
-        val['avail_auth'] = []
-        for auth in self.AUTH_CHOICE:
-            if auth[0] & self.avail_auth:
-                val['avail_auth'].append(auth[1])
+            val['avail_auth'] = []
+            for auth in self.AUTH_CHOICE:
+                if auth[0] & self.avail_auth:
+                    val['avail_auth'].append(auth[1])
+        val['def_auth'] = self.get_def_auth_display()
         if detail:
-            val['def_auth'] = self.get_def_auth_display()
             val['amf'] = self.amf
             val['op'] = self.op
             val['sqn'] = self.sqn
@@ -141,8 +141,9 @@ class Impu(models.Model):
     def dict(self, detail=False):
         val = {}
         val['identity'] = self.identity
-        val['impu_type'] = self.get_impu_type_display()
-        val['barring'] = self.barring
+        if detail:
+            val['impu_type'] = self.get_impu_type_display()
+            val['barring'] = self.barring
         val['user_status'] = self.get_user_status_display()
         if self.service_profile:
             val['service_profile'] = self.service_profile.name
