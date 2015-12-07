@@ -8,7 +8,7 @@ class Imsu(models.Model):
     scscf_name  = models.CharField(db_column='scscf_name', max_length=255, null=True, blank=True)
     diameter_name = models.CharField(db_column='diameter_name', max_length=255, null=True, default='', blank=True)
     capa_set    = models.ForeignKey('CapabilitiesSet', db_column='id_capabilities_set', to_field='id_set', null=True, editable=False)
-    pref_scscf  = models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', null=True, editable=False)
+    pref_scscf_set= models.ForeignKey('PreferredScscfSet', db_column='id_preferred_scscf_set', to_field='id_set', null=True, editable=False)
     
     def dict(self, detail=False):
         val = {}
@@ -19,7 +19,7 @@ class Imsu(models.Model):
             if self.capa_set:
                 val['capa_set'] = self.capa_set.name
             if self.pref_scscf:
-                val['pref_scscf'] = self.pref_scscf.name
+                val['pref_scscf_set'] = self.pref_scscf_set.name
         val['impi'] = []
         for impi in self.impis.all():
             val['impi'].append(impi.dict(detail))
@@ -129,9 +129,9 @@ class Impu(models.Model):
     impu_type   = models.IntegerField(db_column='type', choices=IMPU_TYPE_CHOICE, default=PUBLIC_USER_IDENTITY)
     barring     = models.BooleanField(db_column='barring', default=False)
     user_status = models.IntegerField(db_column='user_state', choices=USER_STATUS_CHOICE, default=NOT_REGISTERED)
-    service_profile=models.ForeignKey('ServiceProfile', db_column='id_sp', related_name='impus', null=True, editable=False)
-    implicit_set = models.IntegerField(db_column='id_implicit_set', default=-1)
-    charging_info_set=models.IntegerField(db_column='id_charging_info', null=True, default=-1)
+    service_profile=models.ForeignKey('ServiceProfile', db_column='id_sp', null=True, editable=False)
+    implicit_set= models.IntegerField(db_column='id_implicit_set', default=-1, editable=False)
+    charging_set=models.ForeignKey('ChargingSet', db_column='id_charging_info', null=True, editable=False)
     wildcard_psi= models.CharField(db_column='wildcard_psi', max_length=255, default='')
     display_name= models.CharField(db_column='display_name', max_length=255, default='')
     psi_activation= models.BooleanField(db_column='psi_activation', default=False)
@@ -147,8 +147,8 @@ class Impu(models.Model):
         if self.service_profile:
             val['service_profile'] = self.service_profile.name
         if detail:
-            val['implicit_set'] = self.implicit_set
-            val['charging_info_set'] = self.charging_info_set
+            if self.charging_set:
+                val['charging_set'] = self.charging_set.name
             val['wildcard_psi'] = self.wildcard_psi
             val['display_name'] = self.display_name
             val['psi_activation'] = self.psi_activation
@@ -404,4 +404,16 @@ class PreferredScscfSet(models.Model):
         db_table = 'preferred_scscf_set'
         managed = False
         
-        
+class ChargingSet(models.Model):
+    id          = models.IntegerField(db_column='id', primary_key=True, editable=False)
+    name        = models.CharField(db_column='name', max_length=255, unique=True)
+    pri_ecf    = models.CharField(db_column='pri_ecf', max_length=255)
+    sec_ecf    = models.CharField(db_column='sec_ecf', max_length=255)
+    pri_ccf    = models.CharField(db_column='pri_ccf', max_length=255)
+    sec_ccf    = models.CharField(db_column='sec_ccf', max_length=255)
+    
+    class Meta:
+        db_table = 'charging_info'
+        managed = False
+
+       

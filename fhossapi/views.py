@@ -17,21 +17,6 @@ from .models import *
 logger = logging.getLogger('fhossapi')
 
 
-'''
-def get_user_dict(imsu):
-	user_dic = model_to_dict(imsu)
-	user_dic['impi'] = []
-	for impi in imsu.impis.all():
-		impi_dic = model_to_dict(impi)
-		impi_dic['impu'] = []
-		for impu in impi.impus.all():
-			impu_dic = model_to_dict(impu)
-			impu_dic['service_profile'] = impu.service_profile.name
-			impi_dic['impu'].append(impu_dic)
-		user_dic['impi'].append(impi_dic)
-	return user_dic
-'''
-
 def index(request):
 	return HttpResponseRedirect("/hss.api/docs")
 
@@ -52,11 +37,9 @@ class AuthToken(APIView):
 			  type: string
 			  paramType: query
 	"""
-
 	def get(self, request):
 		username = request.query_params.get('username')
-		password = request.query_params.get('password')
-
+		password = request.query_params.get('password') 
 		if username and password:
 			user = authenticate(username=username, password=password)
 			if user:
@@ -66,11 +49,41 @@ class AuthToken(APIView):
 				raise NotAuthenticated('Unable to log in with provided credentials.')
 		else:
 			raise ValidationError('Must include "username" and "password" parameters.')
-
 		token = Token.objects.get(user=user)
 		resp = {}
 		resp['token'] = token.key
 #resp['created'] = created
+		return Response(resp)
+
+class CodeListView(APIView):
+	"""
+	Get code list
+	---
+	GET:
+		parameters:
+			- name: code
+			  description: code (auth|impu_type)
+			  required: true
+			  type: string
+			  paramType: path
+	"""
+	# permission_classes = (IsAuthenticated,)
+	def get(self, request, code):
+		resp = {}
+		items = []
+		if code == 'auth':
+			choices =  Impi.AUTH_CHOICE
+		elif code == 'impu_type':
+			choices = Impu.IMPU_TYPE_CHOICE
+		else:
+			raise NotFound('Unknown code[%s].' % (code))
+		
+		for item in choices:
+			items.append({'code': item[0], 'desc': item[1]})
+
+		resp['code'] = code
+		resp['count'] = len(items)
+		resp['item'] = items;
 		return Response(resp)
 
 class UserSearchView(APIView):
@@ -384,3 +397,48 @@ class ServiceDetailView(APIView):
 		resp = {}
 		return Response(resp)
 
+
+class PrefScscfSetView(APIView):
+	"""
+	manage prefered s-cscf set
+	---
+	"""
+	# permission_classes = (IsAuthenticated,)
+	
+	def get(self, request):
+		resp = {}
+		items = PreferredScscfSet.objects.order_by('name').values_list('name', flat=True).distinct()
+		
+		resp['count'] = len(items)
+		resp['pref_scscf_set'] = items
+		return Response(resp)
+	
+class CapaSetView(APIView):
+	"""
+	manage capability set
+	---
+	"""
+	# permission_classes = (IsAuthenticated,)
+	
+	def get(self, request):
+		resp = {}
+		items = CapabilitiesSet.objects.order_by('name').values_list('name', flat=True).distinct()
+		
+		resp['count'] = len(items)
+		resp['capa_set'] = items
+		return Response(resp)
+
+class ChargingSetView(APIView):
+	"""
+	manage charging set
+	---
+	"""
+	# permission_classes = (IsAuthenticated,)
+	
+	def get(self, request):
+		resp = {}
+		items = ChargingSet.objects.order_by('name').values_list('name', flat=True).distinct()
+		
+		resp['count'] = len(items)
+		resp['charging_set'] = items
+		return Response(resp)
