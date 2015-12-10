@@ -237,7 +237,7 @@ class UserDetailView(APIView):
 		except:
 			raise NotFound('User[%s] not found.' % (name))
 		
-		resp['user'] = imsu.dict()
+		resp['user'] = imsu.dict(detail=True)
 		return Response(resp)
 
 	def post(self, request, name):
@@ -384,7 +384,7 @@ class ServiceDetailView(APIView):
 		except:
 			raise NotFound('Service[%s] not found.' % (name))
 		
-		resp['service'] = sp.dict()
+		resp['service'] = sp.dict(detail=True)
 		return Response(resp)
 
 	def post(self, request, name):
